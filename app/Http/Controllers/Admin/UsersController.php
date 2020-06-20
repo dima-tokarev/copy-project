@@ -13,9 +13,6 @@ use Gate;
 
 
 
-
-
-
 class UsersController extends AdminController
 {
 
@@ -84,7 +81,7 @@ class UsersController extends AdminController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
         //
         $result = $this->us_rep->addUser($request);

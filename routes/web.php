@@ -21,6 +21,8 @@ Route::group(['prefix' => 'admin','middleware' => 'auth'],function (){
 
     Route::get('/',['uses' => 'Admin\IndexController@index','as' => 'adminIndex']);
     Route::resource('/users','Admin\UsersController');
+    Route::resource('/preworks','Admin\PreWorkController');
+    Route::post('/preworks/attr-val','Admin\PreWorkController@getVal');
 });
 
 /*Route::get('/home', 'HomeController@index')->name('home');*/

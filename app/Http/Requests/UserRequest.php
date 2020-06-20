@@ -14,6 +14,7 @@ class UserRequest extends Request
     public function authorize()
     {
      /*  return \Auth::user()->canDo('EDIT_USERS');*/
+        return true;
     }
 
 	protected function getValidatorInstance()
@@ -42,11 +43,31 @@ class UserRequest extends Request
     {
         $id = (isset($this->route()->parameter('users')->id)) ? $this->route()->parameter('users')->id : '';
 
+
+
 		return [
              'name' => 'required|max:255',
 		/*	 'login' => 'required|max:255',*/
 			/* 'role_id' => 'required|integer',*/
              'email' => 'required|email|max:255|unique:users,email,'.$id
         ];
+
+
+    }
+    public function messages()
+    {
+        return [
+            'name.required' => 'Не заполнено поле "Имя пользователя"',
+            'name.max' => 'Превышено количество символов в имени, допустимый максимум 255 символов',
+            'email.max' => 'Превышено количество символов в email, допустимый максимум 255 символов',
+            'email.required' => 'Не заполнено поле "Email пользователя',
+            'email.unique' => 'Данный email зарегистрирован',
+            'password.required' => 'Не заполнено поле "Пароль"',
+            'password.confirmed' => 'Введеные пароли не совпадают',
+            'password.min' => 'Пароль должен быть минимум из 6 символов'
+
+
+        ];
+
     }
 }

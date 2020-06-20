@@ -24,7 +24,7 @@ class UsersRepository extends Repository
 
         $user = $this->model->create([
             'name' => $data['name'],
-         /*   'login' => $data['login'],*/
+         /* 'login' => $data['login'],*/
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
         ]);
