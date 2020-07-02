@@ -13,7 +13,7 @@ class Attribute_Definition extends Model
 
     public function attrType()
     {
-      $this->hasOne('App\Attribute_Scheme_Type','attr_id');
+       return $this->belongsTo('App\ObjectType','attr_type');
     }
 
 

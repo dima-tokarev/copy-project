@@ -41,4 +41,12 @@ class User extends Authenticatable
          $this->hasOne('App\PreWork','author_id');
     }
 
+    public function preWorksRep() {
+        $this->hasOne('App\PreWork','author_id');
+    }
+
+    public function CommentsAuthor(){
+        return $this->belongsTo('App\Comments','author_id');
+    }
+
 }

@@ -13,9 +13,13 @@
     <script src="{{ asset('js/app.js') }}" defer></script>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
     <script src="{{ asset('js/attr.js') }}" ></script>
+    <script src="https://cdn.tiny.cloud/1/8ya2njt9elp5ngn2o994v0hi4hw4d8ffxyjl43x6imvd68ma/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="{{ asset('js/comment-reply.js') }}"></script>
+    <script src="{{ asset('js/myscripts.js') }}"></script>
+
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}">
+{{--    <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}">--}}
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
 
     <!-- Styles -->
