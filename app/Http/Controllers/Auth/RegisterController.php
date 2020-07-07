@@ -49,11 +49,16 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
+        $message = [
+
+            'password.min' => 'Пароль должен содержать минимум 8 символов'
+        ];
+
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
+        ],$message);
     }
 
     /**

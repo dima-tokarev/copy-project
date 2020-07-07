@@ -75,5 +75,35 @@ jQuery(document).ready(function($) {
 					});
 		
 	});
-	
+
+
+/*
+	$('#delete-confirm').on('click', function (event) {
+		event.preventDefault();
+
+		const url = $('#delete-form').attr('action');
+
+		swal({
+			title: 'Вы уверенны?',
+			text: 'Эта запись и ее детали будут навсегда удалены!',
+			icon: 'warning',
+			buttons: ["Отмена", "Да!"],
+		}).then(function(value) {
+			if (value) {
+				let id = $(this).data('id');
+				$.ajax({
+					type: "POST",
+					url: url,
+					data: {id:id},
+					headers:{'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+					success: function (data) {
+
+					}
+				});
+			}
+		});
+	});
+*/
+
+
 });

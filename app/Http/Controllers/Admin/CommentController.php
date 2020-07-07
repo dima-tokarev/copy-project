@@ -10,7 +10,8 @@ use Validator;
 use App\Comments;
 use Illuminate\Support\Facades\Auth;
 use App\History;
-
+use App\User;
+use Illuminate\Support\Facades\Mail;
 
 class CommentController extends Controller
 {
@@ -89,6 +90,35 @@ class CommentController extends Controller
         $prework = PreWork::find($data['object_id']);
 
         $prework->commentsPreWork()->save($comment);
+
+
+        $emails = [];
+
+
+        if($prework->author_id === Auth::user()->id) {
+
+            /*false*/
+
+        }else{
+
+            $users = User::all();
+
+
+            foreach ($users as $user){
+                $emails[] = $user->email;
+            }
+
+
+            Mail::send('admin.mail_comment', ['author' => Auth::user()->name, 'id' => $prework->id,'pre_work' => $prework], function ($message) use ($emails) {
+
+                $message->from('reamonn2008@mail.ru', 'Сервис-портал');
+                $message->to($emails)->subject('Добавление комментария к работе');
+
+            });
+
+        }
+
+
 
 
         if($comment)

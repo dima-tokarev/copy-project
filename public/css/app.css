@@ -11020,13 +11020,13 @@ a.text-dark:focus {
 .menubar nav ul li ul {
     display: block;
     position: absolute;
-    min-width: 800px;
+    min-width: 500px;
     top: 100%;
     left: 0;
     transition: 0.3s;
     box-shadow: 0px 5px 8px rgba(106, 106, 106, 0.4);
     border: 1px solid #ebebeb;
-    padding: 25px 0px 0;
+    padding: 7px 0px 0;
     visibility: hidden;
     opacity: 0;
     background: #ffffff;

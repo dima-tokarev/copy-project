@@ -15,7 +15,7 @@
 
 
 
-Auth::routes();
+Auth::routes(['middleware' => 'revalidate']);
 
 Route::get('/', array('before' => 'auth', function() {
 
@@ -27,7 +27,15 @@ Route::get('/', array('before' => 'auth', function() {
 
 }));
 //admin
-Route::group(['prefix' => 'admin','middleware' => 'auth'],function (){
+Route::group(['prefix' => 'admin','middleware' => ['auth','revalidate']],function (){
+
+
+
+    Route::get('/clear-cache', function() {
+        Artisan::call('cache:clear');
+        return "Cache is cleared";
+    });
+
 
     Route::get('/',['uses' => 'Admin\IndexController@index','as' => 'adminIndex']);
     Route::resource('/users','Admin\UsersController');
@@ -41,6 +49,7 @@ Route::group(['prefix' => 'admin','middleware' => 'auth'],function (){
     Route::post('/prework-report-update','Admin\PreWorkReportController@update')->name('prework-reports.update');
     Route::post('/preworks/attr-val','Admin\PreWorkController@getVal');
     Route::get('preworks/attr-val/fetch_data','Admin\PreWorkController@fetch_data');
+
     Route::POST('preworks/add-filter','Admin\PreWorkController@addFilter');
     Route::POST('preworks/filter-form','Admin\PreWorkController@storeFilter')->name('filter_form');
 

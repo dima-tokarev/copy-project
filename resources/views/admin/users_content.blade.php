@@ -1,7 +1,7 @@
 <div class="container">
 
 <div class="btn-toolbar">
-    <a href="{{route('users.create')}}"> <button class="btn btn-primary">Добавить пользователя</button></a>
+    <a href="{{route('users.create')}}"> <button class="btn btn-info">Добавить пользователя</button></a>
   {{--  <button class="btn">Import</button>
     <button class="btn">Export</button>--}}
 </div>

@@ -2,11 +2,17 @@
         <div class="modal-content">
             <form id="add_form" action="{{route('preworks.store')}}" method="post" enctype="multipart/form-data">
 
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Предварительные работы</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <div style="padding: 16px;" class="row">
+                    <div class="col-7">     <h5 class="modal-title" id="exampleModalLongTitle">Предварительные работы</h5></div>
+
+                {{--    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
-                    </button>
+                    </button>--}}
+
+                        <div  class="col-5">
+                            <div class="form-group" style="color: darkred;margin-left: 5%;font-size: 14px"><b>* поля обязательные к заполеннию</b></div>
+                        </div>
+
                 </div>
                 <div class="modal-body">
 
@@ -15,17 +21,17 @@
 
                         <div class="form-group">
 
-                            <label for="exampleFormControlInput1"></label>
-                            <input type="text" class="form-control" name="name_prework" id="exampleFormControlInput1" placeholder="Введите название работы">
+                            <label for="exampleFormControlInput1">Тема<span><b>*</b></span></label>
+                            <input type="text" class="form-control" name="name_prework" id="exampleFormControlInput1" value="{{old('name_prework')}}" placeholder="Введите название работы">
                         </div>
                         <div class="form-group">
 
-                            <label for="exampleFormControlInput1">Ответственный</label>
+                            <label for="exampleFormControlInput1">Ответственный<span><b>*</b></span></label>
                          @isset($users)
                             <select  name="responsible" class="form-control form-control-sm">
                                 <option selected></option>
                                 @foreach($users as $user)
-                                <option value="{{$user->id}}">{{$user->name}}</option>
+                                <option  value="{{$user->id}}">{{$user->name}}</option>
                                 @endforeach
                             </select>
                          @endisset
@@ -47,16 +53,32 @@
                             @if($attributes)
                                 @foreach ($attributes as $attribute)
 
-                                    @if($attribute->attrType->name == 'float_attribute_values' or $attribute->attrType->name == 'int_attribute_values' )
+                                    @if($attribute->attrType->name == 'float_attribute_values' )
                                         <tr>
                                             <th scope="row">{{$attribute->id}}</th>
                                             <td>{{$attribute->attr_name}}</td>
                                             <td>
-                                                <input type="number" name="attr_simple[{{$attribute->id}}][{{$attribute->attrType->name}}]" value="0" class="form-control" size="20" placeholder="Введите значение">
+                                                <input style="width: 89%;float: left;margin-right: 5px" type="number" name="attr_simple[{{$attribute->id}}][{{$attribute->attrType->name}}]" value="{{old('attr_simple.'.$attribute->id.'.'.$attribute->attrType->name) ?? '0'}}" class="form-control" size="20" placeholder="Введите значение">
                                                 <input type="hidden" name="object_id" value="{{$object_id}}">
                                             </td>
 
                                         </tr>
+
+
+                                    @endif
+
+                                    @if($attribute->attrType->name == 'int_attribute_values' )
+                                        <tr>
+                                            <th scope="row">{{$attribute->id}}</th>
+                                            <td>{{$attribute->attr_name}}</td>
+                                            <td>
+                                                <input style="width: 89%;float: left;margin-right: 5px"  type="number" name="attr_simple[{{$attribute->id}}][{{$attribute->attrType->name}}]" value="{{old('attr_simple.'.$attribute->id.'.'.$attribute->attrType->name) ?? '0'}}" class="form-control" size="20" placeholder="Введите значение">
+                                                <input type="hidden" name="object_id" value="{{$object_id}}">
+                                            </td>
+
+                                        </tr>
+
+
                                     @endif
                                     @if($attribute->attrType->name == 'string_attribute_values')
                                         <tr>
@@ -206,7 +228,7 @@
 
                         <h5>Описание</h5>
                         <div class="form-group">
-                            <label for="exampleFormControlTextarea1">Краткое описание</label>
+                            <label for="exampleFormControlTextarea1"></label>
                             <textarea  style="width: 100%;" class="form-control" name="desc_prework" id="exampleFormControlTextarea1" rows="3"></textarea>
                         </div>
 
@@ -234,6 +256,7 @@
                     <button id="add_work"  type="submit" class="btn btn-primary">Добавить</button>
 
                 </div>
+
 
 
             </form>

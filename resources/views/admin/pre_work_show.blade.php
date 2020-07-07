@@ -1,30 +1,22 @@
 <div class="container">
 
-<h4>Предварительные работы</h4>
-    <br>
+
     <form id="form-filter" action="{{route('filter_form')}}" method="post" enctype="multipart/form-data">
-    <table class="table">
-        <thead>
-        <tr>
-            <th scope="col">Фильтры</th>
-            <th scope="col">&nbsp;</th>
-            <th scope="col">&nbsp;</th>
 
-
-        </tr>
-        </thead>
-        <tbody id="add_content_table">
-           {{-- контент фильтров--}}
-        </tbody>
-        </table>
 
         <table class="table">
+            <thead>
             <tr>
-                <td align="right" colspan="3">
+                <th style="background:  #f6f6f6;border: none" scope="col">Поиск по фильтрам</th>
 
-                    <span align="right" style="margin-right: 5px;">Добавить фильтр: </span>
-                    <select   style="float: right;" id="add_filter" name="add_filter">
-                        <option  disabled selected>Выбрать</option>
+            </tr>
+            </thead>
+            <tr>
+                <td style="border-top:0px;">
+                    <br>
+                    <span  style="margin-right: 5px;">Добавить фильтр: </span>
+                    <select id="add_filter" name="add_filter">
+                        <option id="default" selected>Выбрать</option>
                         <option id="static_name" value="static_name">Тема</option>
                         <option id="static_author" value="static_author">Ответственный</option>
                         @foreach($filters as $filter)
@@ -38,10 +30,25 @@
         <table class="table">
             <thead>
             <tr>
-                <th scope="col">Столбцы</th>
-                <th scope="col">&nbsp;</th>
-                <th scope="col">&nbsp;</th>
-                <th scope="col">&nbsp;</th>
+                &nbsp;
+            </tr>
+            </thead>
+            <tbody id="add_content_table">
+
+
+            {{-- контент фильтров--}}
+            </tbody>
+        </table>
+
+
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th style="background:  #f6f6f6;border: none"  scope="col">Отображение результатов</th>
+                <th style="background:  #f6f6f6;border: none"  scope="col">&nbsp;</th>
+                <th style="background:  #f6f6f6;border: none"  scope="col">&nbsp;</th>
+                <th style="background:  #f6f6f6;border: none"   scope="col">&nbsp;</th>
 
             </tr>
             </thead>
@@ -86,7 +93,20 @@
 
 
        @csrf
-        <p id="submit_filter" class="btn btn-info">Применить</p>  <p class="btn btn-danger"><a style="color: white" href="./preworks">Сбросить</a></p>
+
+
+        <div class="row">
+            <div style="" class="col-4">
+                <p id="submit_filter" class="btn btn-info">Применить</p>
+                <p class="btn btn-danger"><a style="color: white" href="./preworks">Сбросить</a></p>
+            </div>
+            <div style="" class="col-4">&nbsp;</div>
+            <div style="" class="col-4">
+
+
+                <p style="float: right"><a class="btn btn-info" href="{{route('preworks.create')}}">Добавить работу</a></p>
+            </div>
+        </div>
     </form>
 
 <table id="content_work" class="table">
@@ -116,8 +136,9 @@
 
                         </div>
                         <div class="cols-2">
-                            <form action="{{route('preworks.delete',$pre_work->id)}}" method="post">
-                                @csrf<button style="margin-top: -8px;color:indianred"  class="btn btn-link fa fa-trash-o"></button>
+                            <form id="delete-form" action="{{route('preworks.delete',$pre_work->id)}}" method="post">
+                                @csrf
+                                <button id="delete-confirm" data-id="{{$pre_work->id}}" style="margin-top: -8px;color:indianred"  class="btn btn-link fa fa-trash-o"></button>
                             </form>
                         </div>
                     </div>
@@ -137,10 +158,7 @@
     <div class="row">
         <div style="" class="col-12">{{$pre_works->links()}}</div>
     </div>
-    <div class="row">
-        <div style="" class="col-10"></div>
-        <div style="" class="col-2"> <a href="{{route('preworks.create')}}"><button type="submit" class="btn btn-primary">Добавить работу</button></a></div>
-    </div>
+
 
 </div>
 
@@ -149,12 +167,26 @@
     $(document).ready(function () {
 
       // список фильтров
+        $.ajax({
+            type: "POST",
+            url: "preworks/add-filter",
+            data: {
+                "class" : 'static_author',
+                "_token": $("input[name='_token']").val()
+            },
+            success: function(msg){
+                $("#static_author").attr('disabled','true');
+                $('#add_content_table').append(msg);
+            }
+        });
+
 
        $('#add_filter').change(function () {
 
            let select = $(this).val();
 
            $("#add_filter option:selected").attr('disabled','true');
+           $("#add_filter option:selected").prop('selected', false);
 
            $.ajax({
                type: "POST",
@@ -258,6 +290,8 @@
                 }
             });
         });
+
+
 
 
 

@@ -35,33 +35,36 @@
         </div>
     <hr>
     <br/>
-     <div style="margin-bottom: 10px" class="row">
+     <div style="margin-bottom: 23px" class="row">
          <div class="col-12">
              <b>Основные атрибуты:</b>
+          
          </div>
          <br>
      </div>
-    <div style="background-color: #f6f6f6;padding: 10px">
+
 
     <div class="row">
-
         @foreach($attrs as $attr)
-        <div style="margin-bottom: 25px;" class="col-6"><b>{{$attr->attr_name}}:</b> <span>{{$attr->value_attr}}</span>
-
+        <div class="col-12"><b>{{$attr->attr_name}}:</b> <span>{{$attr->value_attr}}</span>
+            <hr>
         </div>
+
         @endforeach
     </div>
-    <br>
+
         <div class="row">
 
             @foreach($float_attr as $attr)
-                <div class="col"><b>{{$attr->attr_name}}:</b> <span>{{$attr->value_type}}</span>
+                <div class="col-12"><b>{{$attr->attr_name}}:</b> <span>{{$attr->value_type}}</span>
+                    <hr>
                 </div>
+
             @endforeach
 
 
                 @foreach($int_attr as $attr)
-                    <div class="col"><b>{{$attr->attr_name}}:</b> <span>{{$attr->value_type}}</span>
+                    <div class="col-12"><b>{{$attr->attr_name}}:</b> <span>{{$attr->value_type}}</span>
                         y.e
                     </div>
                 @endforeach
@@ -71,10 +74,10 @@
 
 
         </div>
-    </div>
+
         <hr>
         <br>
-        <div s class="row">
+        <div  class="row">
 
                 <div class="col"><b>Описание:</b></div>
 
@@ -85,6 +88,7 @@
         <br>
 
         </div>
+                    @if(count($attachments) > 0)
         <div class="row">
             <div class="col"><b>Прикрепленные файлы:</b><br>
             @isset($attachments)
@@ -95,31 +99,36 @@
             @endisset
             </div>
         </div>
-        <hr>
+                    @endif
+                    @if(count($reports) > 0)
+                    <hr>
         <div class="row">
 
             <div class="col"><b>Выполненые работы:</b></div>
         <br>
         </div>
-        <div  class="row ">
+
          @if(isset($reports))
             @foreach($reports as $value)
-                <div  class="col ">
-                    <a class="fa fa-bookmark" href="{{route('prework-reports.show',$value->id)}}"> {{$value->name}}</a>
-                </div>
-
+                            <div  class="row">
+                                    <div  class="col">
+                                        <a class="fa fa-bookmark" href="{{route('prework-reports.show',$value->id)}}"> {{$value->name}}</a>
+                                    </div>
+                            </div>
              @endforeach
 
 
             @endif
-        </div>
+                        <hr>
+                    @endif
+                    @if(count($history) > 0)
 
-        <hr>
+
         <div class="row">
 
             <div class="col-12">
                 <b>История:</b>
-                @isset($history)
+
                 <br>
                 <table class="table">
                     <thead>
@@ -139,14 +148,15 @@
                                 {{$value->event_comment}}
                             @endif
                         </td>
-                        <td>{{\App\User::find($value->author_id)->first()->name}}</td>
+                        <td>{{\App\User::find($value->author_id)->name}}</td>
                         <td>{{date('d.n.Y',strtotime($value->created_at))}}</td>
                         </tr>
                     @endforeach
                 </table>
-                @endisset
+
             </div>
         </div>
+                    @endif
         <br>
         <div class="row">
             <div class="col-12">
@@ -188,7 +198,7 @@
                             <input id="comment_parent" type="hidden" name="comment_parent" value="0" />
 
 
-                                <input class="btn btn-info" name="submit" type="submit" id="submit" value="Добавить" />
+                                <input class="btn btn-info" name="submit" type="submit" id="submit" value="Добавить комментарий" />
                         {{csrf_field()}}
                         </form>
 

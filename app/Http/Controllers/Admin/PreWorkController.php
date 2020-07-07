@@ -54,7 +54,7 @@ class PreWorkController extends AdminController
     {
         //
 
-        $pre_works = PreWork::paginate(5);
+        $pre_works = PreWork::where('author_id',Auth::user()->id)->paginate(50);
 
         $clients = Client::all();
 
@@ -96,10 +96,10 @@ class PreWorkController extends AdminController
 
 
     }
-
+/*
     public function getRoles() {
         return \App\Role::all();
-    }
+    }*/
 
     public function getVal()
     {
@@ -158,7 +158,7 @@ class PreWorkController extends AdminController
 
         if($_POST['class'] == 'static_author'){
 
-            $data = DB::table('users')->select('*')->get();
+            $data = DB::table('users')->where('id','!=',Auth::user()->id)->get();
 
 
             $html .= '<tr relate_option="'.$_POST['class'].'">
@@ -176,6 +176,7 @@ class PreWorkController extends AdminController
                     
                     <select  name="value_select_'.$_POST["class"].'"   id="inputState" class="form-control select-add">';
 
+            $html .= '<option selected value ="' . Auth::user()->id . '">' . Auth::user()->name . '</option >';
             foreach ($data as $item) {
                 $html .= '<option value ="' . $item->id . '">' . $item->name . '</option >';
             }
@@ -567,10 +568,10 @@ class PreWorkController extends AdminController
 
                         </div>
                         <div class="cols-2">
-                            <form action="preworks-delete/'.$item->id.'" method="post">
+                            <form id="delete-form" action="preworks-delete/'.$item->id.'" method="post">
                             '.csrf_field().'
                          
-                               <button style="margin-top: -8px;color:indianred"  class="btn btn-link fa fa-trash-o"></button>
+                               <button id="delete-confirm" style="margin-top: -8px;color:indianred"  class="btn btn-link fa fa-trash-o"></button>
                             </form>
                         </div>
                     </div></td>';
@@ -590,8 +591,8 @@ class PreWorkController extends AdminController
 
                         </div>
                         <div class="cols-2">
-                            <form action="/preworks-delete/'.$item->id.'" method="post">
-                                  '.csrf_field().'<button style="margin-top: -8px;color:indianred" class="btn btn-link fa fa-trash-o"></button>
+                            <form id="delete-form" action="/preworks-delete/'.$item->id.'" method="post">
+                                  '.csrf_field().'<button id="delete-confirm" style="margin-top: -8px;color:indianred" class="btn btn-link fa fa-trash-o"></button>
                             </form>
                         </div>
                     </div>
@@ -661,6 +662,7 @@ class PreWorkController extends AdminController
         $attachments = Attachment_link::where('object_id',$id)->get();
 
         $history = History::where('object_id',$id)->where('object_type_id',1)->get();
+
 
         $com = $pre_work->commentsPreWork->where('object_type_id',1)->groupBy('parent_id');
         $count = count($pre_work->commentsPreWork->where('object_type_id',1));
@@ -742,10 +744,11 @@ class PreWorkController extends AdminController
         foreach ($attr as $item)
         {
 
-            if($item->attr_type = 'source'){
+            if($item->attr_type == 'source'){
                 $c_attr = DB::table($item->attr_type)->where('id','!=',$item->value_type)->where('parent_id','!=',0)->get();
                 $change_attr[$item->attr_type] = $c_attr;
             }else{
+
                 $c_attr = DB::table($item->attr_type)->where('id','!=',$item->value_type)->get();
                 $change_attr[$item->attr_type] = $c_attr;
             }
@@ -805,6 +808,8 @@ class PreWorkController extends AdminController
                     return back()->with($result);
                 }
                 return redirect('/admin/preworks')->with($result);
+
+
     }
 
 }

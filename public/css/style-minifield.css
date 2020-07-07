@@ -210,11 +210,11 @@ h3#reply-title {
     line-height: 27px;
 }
 #respond input {
-    width: 92%;
+/*    width: 92%;
     padding: 9px;
     margin: 0;
     border: 1px solid #CFCFCF;
-    background-color: #fff;
+    background-color: #fff;*/
 }
 #respond input:focus, #respond textarea:focus {
     background-color: #f7f7f7;
@@ -231,7 +231,7 @@ h3#reply-title {
     width: 98.2%;
 }
 #respond #submit {
-    background: url("../images/input_pattern.png") repeat-x scroll 0 0 #F3F0F0;
+/*    background: url("../images/input_pattern.png") repeat-x scroll 0 0 #F3F0F0;
     color: #4C4B4B;
     float: right;
     font-size: .7em!important;
@@ -239,12 +239,12 @@ h3#reply-title {
     text-transform: uppercase;
     width: 130px;
     margin: 0 0 20px;
-    padding: 8px;
+    padding: 8px;*/
 }
 #respond #submit:hover {
-    background: url("../images/input_pattern_hover.png") repeat-x scroll 0 6px #F3F0F0;
+/*    background: url("../images/input_pattern_hover.png") repeat-x scroll 0 6px #F3F0F0;
     cursor: pointer;
-    color: #000
+    color: #000*/
 }
 #respond .containerPost {
     font-size: 1.1em

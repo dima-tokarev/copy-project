@@ -1,35 +1,37 @@
 <div class="container">
     <button style="margin-left: 70%" class="btn badge-light" onclick="window.history.back()">Вернуться Назад</button>
+
     <div class="row">
         <div class="col-2"></div>
         <div class="col-8">
-            <h4>Форма - создание отчета</h4>
+            <h4 style="width: 68%;float: left">Форма - создание отчета</h4>
+            <span style="width: 31%"><b style="color: darkred;">* поля обязательные к заполеннию</b></span>
             <hr>
             <div>
                 <form action="{{route('prework-reports.store')}}" method="post" enctype="multipart/form-data">
-                    <label >Название</label>
+                    <label >Название<b>*</b></label>
                     <br>
-                    <input name="pre_work_report_name" type="text" class="form-control" placeholder="Введите название"><br>
-                    <label >Количество часов</label>
+                    <input name="pre_work_report_name" type="text" value="{{old('pre_work_report_name')}}"  class="form-control" placeholder="Введите название"><br>
+                    <label >Количество часов<b>*</b></label>
                     <br>
-                    <input name="pre_work_report_hours"  type="number" class="form-control" placeholder="Введите число"><br>
-                    <label >Дата выполнения:</label>
+                    <input name="pre_work_report_hours" value="{{old('pre_work_report_hours')}}"   type="number" class="form-control" placeholder="Введите число"><br>
+                    <label >Дата выполнения:<b>*</b></label>
                     <br>
-                    <input name="pre_work_report_name_date"  type="date" class="form-control" placeholder="Введите дату"><br>
-                    <label >Обьем затраченых средств:</label>
+                    <input name="pre_work_report_name_date" value="{{old('pre_work_report_name_date')}}"  type="date" class="form-control" placeholder="Введите дату"><br>
+                    <label >Объем затраченных денежных средств:<b>*</b></label>
                     <br>
-                    <input name="pre_work_report_name_budget" type="number" value="0" class="form-control" placeholder="Введите число"><br>
+                    <input  name="pre_work_report_name_budget"  type="number" value="{{old('pre_work_report_name_budget') ?? '0'}}" class="form-control" placeholder="Введите число"><br>
                     <label >Прикрепить файл</label>
                     <br>
                     <input name="pre_work_file_report" type="file"><br>
                     <br>
                     <label >Описание отчета</label>
                     <br>
-                    <textarea name="desc_report"></textarea><br>
+                    <textarea name="desc_report">{{old('desc_report')}}</textarea><br>
 
 
 
-                    <label >Участники сторон</label>
+                    <label>Участники со стороны заказчика</label>
                     <br>
                     <div id="add_participant_content">
                         <div class="form-row">
@@ -63,8 +65,12 @@
                 </form>
             </div>
             <div class="col-2"></div>
+            <br>
+
         </div>
+
     </div>
+
 </div>
 
 <script>

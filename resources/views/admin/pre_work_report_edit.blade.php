@@ -1,7 +1,7 @@
 <div class="container">
    <form action="{{route('prework-reports.update')}}" method="post" enctype="multipart/form-data">
     <div class="row">
-        <button style="margin-left: 86%" class="btn badge-light" onclick="window.history.back()">Вернуться Назад</button>
+
         <div class="col-12">
             <h4>Отчет о выполненой работе</h4>
             <p><b>Ответственный: </b>{{$report->author->name}} / {{date('d.m.Y',strtotime($report->created_at))}} </p>
@@ -26,7 +26,7 @@
             <div><input style="width: 50%" class="form-control" name="total_hours" type="number" value="{{$report->total_hours}}"></div>
             <div><input style="width: 50%" class="form-control"  type="text" value="{{$report->author->name}}"  disabled></div>
             <input type="hidden" name="author_id" value="{{$report->author->id}}">
-            <div><input style="width: 50%" class="form-control" name="budget" type="number" value="{{$report->budget}}"></div>
+            <div><input style="width: 50%;float:left;margin-right: 5px;" class="form-control" name="budget" type="number" value="{{$report->budget}}"><span>руб.</span></div>
 
         </div>
     </div>

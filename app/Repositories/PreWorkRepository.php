@@ -14,11 +14,12 @@ use App\User;
 use Auth;
 use File;
 use DB;
+use Illuminate\Support\Facades\Mail;
 
 class PreWorkRepository extends Repository
 {
     protected $arr_attr = [];
-
+    protected $result_mail = '';
 
     public function __construct(PreWork $pre_work) {
         $this->model  = $pre_work;
@@ -54,7 +55,22 @@ class PreWorkRepository extends Repository
 
 
             ]);
-           if($request->file('doc_prework')) {
+
+
+        $user = User::find($data['responsible']);
+
+
+        Mail::send('admin.mail_responsible', ['author' => $user, 'id' => $prework->id ,'title' => $prework->name], function ($message) use ($user) {
+
+            $message->from('reamonn2008@mail.ru', 'Сервис-портал');
+            $message->to($user->email)->subject('Назначен ответственный');
+
+        });
+
+
+
+
+        if($request->file('doc_prework')) {
 
                $size = $request->file('doc_prework')->getSize();
                $img_name = $request->file('doc_prework')->getClientOriginalName();
@@ -148,10 +164,8 @@ class PreWorkRepository extends Repository
     public function updatePreWork($request) {
 
 
-        /*     if (\Gate::denies('edit',$this->model)) {
-                 abort(403);
-             }*/
 
+        $name_attr ='';
         $data = $request->all();
 
         if(isset($data['responsible'])) {
@@ -165,20 +179,104 @@ class PreWorkRepository extends Repository
                 'object_id' => $data['pre_work_id'],
                 'add_object_id' => $data['responsible']
             ]);
+
+
+            $pre_work = PreWork::find($data['pre_work_id']);
+            $emails = User::all();
+            $users = [];
+            foreach ($emails as $email){
+
+                $users[] = $email->email;
+
+            }
+
+
+            $result = Mail::send('admin.mail_update_responsible',['author' => $author, 'id' => $data['pre_work_id'], 'prework' => $pre_work ,'users' => $users],function ($message) use ($users){
+
+              $message->from('reamonn2008@mail.ru','Сервис-портал');
+              $message->to($users)->subject('Изменение ответственного');
+
+            });
+
         }
 
 
+
+
        if(isset($data['attr'])){
+
+
 
            $sql = DB::table('custom_attribute_value');
            foreach ($data['attr'] as $key =>  $attr)
            {
 
-                $sql->where('attr_id',$key)->update([
+                $sql->where('attr_id',$key)->where('object_id',$data['pre_work_id'])->update([
                     'value' => $attr
 
                 ]);
+
+
+                if($key == 4){
+                    $name_attr = 'источник';
+                    $attr = DB::table('source')->where('id',$attr)->first();
+                    $history = History::create([
+                        'event_comment' => 'Изменение атрибута '.$name_attr.'  на('.$attr->name.')',
+                        'author_id' => $user = Auth::user()->id,
+                        'object_type_id' => 1,
+                        'object_id' => $data['pre_work_id'],
+                        'add_object_id' => $key
+                    ]);
+                }
+                if($key == 2){
+                   $name_attr = 'клиент';
+                    $attr = DB::table('client')->where('id',$attr)->first();
+
+                    $history = History::create([
+                        'event_comment' => 'Изменение атрибута '.$name_attr.'  на('.$attr->name.')',
+                        'author_id' => $user = Auth::user()->id,
+                        'object_type_id' => 1,
+                        'object_id' => $data['pre_work_id'],
+                        'add_object_id' => $key
+                    ]);
+                }
+                if($key == 3){
+                   $name_attr = 'Вид работ';
+                    $attr = DB::table('prework_type')->where('id',$attr)->first();
+
+                    $history = History::create([
+                        'event_comment' => 'Изменение атрибута '.$name_attr.'  на('.$attr->name.')',
+                        'author_id' => $user = Auth::user()->id,
+                        'object_type_id' => 1,
+                        'object_id' => $data['pre_work_id'],
+                        'add_object_id' => $key
+                    ]);
+
+                }
+
+                if($key == 5){
+                       $name_attr = 'статус';
+                        $attr = DB::table('status')->where('id',$attr)->first();
+
+
+                    $history = History::create([
+                        'event_comment' => 'Изменение атрибута '.$name_attr.'  на('.$attr->name.')',
+                        'author_id' => $user = Auth::user()->id,
+                        'object_type_id' => 1,
+                        'object_id' => $data['pre_work_id'],
+                        'add_object_id' => $key
+                    ]);
+
+
+                }
+
+
+
+
+
+
            }
+
 
 
        }
@@ -189,11 +287,26 @@ class PreWorkRepository extends Repository
 
             foreach ($data['float_attr'] as $key => $attr)
             {
-                $sql2->where('attr_id',$key)->update([
+                $sql2->where('attr_id',$key)->where('object_id',$data['pre_work_id'])->update([
                     'value' => $attr
 
                 ]);
+
+                if($key == 1){
+                    $name_attr = 'бюджет';
+                    $attr = DB::table('float_attribute_values')->where('attr_id',$key)->where('value',$attr)->first();
+
+                    $history = History::create([
+                        'event_comment' => 'Изменение атрибута '.$name_attr.'  на('.$attr->value.')',
+                        'author_id' => $user = Auth::user()->id,
+                        'object_type_id' => 1,
+                        'object_id' => $data['pre_work_id'],
+                        'add_object_id' => $key
+                    ]);
+                }
+
             }
+
 
         }
 
@@ -203,11 +316,32 @@ class PreWorkRepository extends Repository
 
             foreach ($data['int_attr'] as $key => $attr)
             {
-                $sql2->where('attr_id',$key)->update([
+                $sql2->where('attr_id',$key)->where('object_id',$data['pre_work_id'])->update([
                     'value' => $attr
 
                 ]);
+
+                if($key == 6){
+                    $name_attr = 'оценка выполненной работы';
+                    $attr = DB::table('int_attribute_values')->where('attr_id',$key)->where('value',$attr)->first();
+
+                    $history = History::create([
+                        'event_comment' => 'Изменение атрибута '.$name_attr.'  на('.$attr->value.')',
+                        'author_id' => $user = Auth::user()->id,
+                        'object_type_id' => 1,
+                        'object_id' => $data['pre_work_id'],
+                        'add_object_id' => $key
+                    ]);
+
+
+                }
+
+
+
+
             }
+
+
 
         }
 
@@ -240,6 +374,34 @@ class PreWorkRepository extends Repository
             ]);
 
         }
+
+        $emails = [];
+
+        $pre_work = PreWork::find($data['pre_work_id']);
+
+        if($pre_work->author_id === Auth::user()->id) {
+
+            return ['status' => 'Работа изменена'];
+
+        }else{
+
+            $users = User::all();
+
+
+            foreach ($users as $user){
+                $emails[] = $user->email;
+            }
+
+
+            Mail::send('admin.mail', ['author' => Auth::user()->name, 'id' => $data['pre_work_id'] ,'pre_work' => $pre_work], function ($message) use ($emails) {
+
+                $message->from('reamonn2008@mail.ru', 'Сервис-портал');
+                $message->to($emails)->subject('Редактирование работы');
+
+            });
+
+        }
+
 
 
 

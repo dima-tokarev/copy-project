@@ -14,9 +14,9 @@ return [
     */
 
     'reset' => 'Ваш пароль был изменен!',
-    'sent' => 'We have e-mailed your password reset link!',
-    'throttled' => 'Please wait before retrying.',
-    'token' => 'This password reset token is invalid.',
-    'user' => "We can't find a user with that e-mail address.",
+    'sent' => 'Мы отправили вам ссылку для сброса пароля по электронной почте!',
+    'throttled' => 'Пожалуйста, подождите, прежде чем повторить попытку.',
+    'token' => 'Этот токен сброса пароля недействителен.',
+    'user' => "Мы не можем найти пользователя с таким адресом электронной почты.",
 
 ];

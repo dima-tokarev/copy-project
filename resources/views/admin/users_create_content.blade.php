@@ -42,7 +42,7 @@
         <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
     </div>--}}
     <div class="btn-toolbar">
-       <button class="btn btn-primary">Добавить пользователя</button>
+       <button class="btn btn-info">Добавить пользователя</button>
         {{--  <button class="btn">Import</button>
           <button class="btn">Export</button>--}}
     </div>

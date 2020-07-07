@@ -30,7 +30,7 @@
 
 
             </div>
-            <div class="col-5"> <b>дата добавления: </b> {{date("d-m-Y", strtotime($pre_works->created_at))}}</div>
+            <div class="col-5"> <b>Дата добавления: </b> {{date("d-m-Y", strtotime($pre_works->created_at))}}</div>
 
         </div>
         <hr>
@@ -39,23 +39,56 @@
 
             @foreach($attrs as $attr)
                 <div class="col"><b>{{$attr->attr_name}}:</b>
-                   <select class="form-control form-control-sm" name="attr[{{$attr->id_attr}}]">
+                    <a class="fa fa-pencil-square-o" id="attr-{{$attr->id_attr}}" href="javascript:void(0)"></a>
+                   <select id="select-attr-{{$attr->id_attr}}" class="form-control form-control-sm" name="attr[{{$attr->id_attr}}]" disabled>
                     <option selected disabled>{{$attr->value_attr}}</option>
                        @foreach($change_attrs[$attr->attr_type] as $item)
                            <option value="{{$item->id}}">{{$item->name}}</option>
                        @endforeach
                    </select>
                 </div>
+             <script>
+                 $(document).ready(function () {
+
+                     $('#attr-{{$attr->id_attr}}').on('click',function () {
+
+                         $('#select-attr-{{$attr->id_attr}}').prop('disabled',false);
+                     })
+
+                 });
+             </script>
             @endforeach
         </div>
         <br>
         <div class="row">
 
             @foreach($float_attr as $attr)
-                <div class="col"><b>{{$attr->attr_name}}:</b> <input style="width: 33%" class="form-control" name="float_attr[{{$attr->id_attr}}]" type="number" value="{{$attr->value_type}}"></div>
+
+                <div class="col"><b>{{$attr->attr_name}}:</b>  <a class="fa fa-pencil-square-o" id="attr-{{$attr->id_attr}}" href="javascript:void(0)"></a> <input style="width: 33%" id="input-attr-{{$attr->id_attr}}"  class="form-control" name="float_attr[{{$attr->id_attr}}]" type="number" value="{{$attr->value_type}}" disabled></div>
+                <script>
+                    $(document).ready(function () {
+
+                        $('#attr-{{$attr->id_attr}}').on('click',function () {
+
+                            $('#input-attr-{{$attr->id_attr}}').prop('disabled',false);
+                        })
+
+                    });
+                </script>
             @endforeach
                 @foreach($int_attr as $attr)
-                    <div class="col"><b>{{$attr->attr_name}}:</b> <input style="width: 33%" class="form-control" name="int_attr[{{$attr->id_attr}}]" type="number" value="{{$attr->value_type}}"></div>
+
+                    <div class="col"><b>{{$attr->attr_name}}:</b>  <a class="fa fa-pencil-square-o" id="attr-{{$attr->id_attr}}" href="javascript:void(0)"></a> <input style="width: 33%" id="input-attr-{{$attr->id_attr}}" class="form-control" name="int_attr[{{$attr->id_attr}}]" type="number" value="{{$attr->value_type}}" disabled></div>
+                    <script>
+                        $(document).ready(function () {
+
+                            $('#attr-{{$attr->id_attr}}').on('click',function () {
+
+                                $('#input-attr-{{$attr->id_attr}}').prop('disabled',false);
+                            })
+
+                        });
+                    </script>
                 @endforeach
         </div>
         <div class="row">
@@ -76,6 +109,19 @@
             <br>
 
         </div>
+
+            <br>
+            <div class="row">
+                <div class="col"><b>Прикрепленные файлы:</b><br>
+                    @isset($attachments)
+                        @foreach($attachments as $attachment)
+                            <a class="fa fa-cloud-upload" href="{{asset('/storage/'.$attachment->attachment->path)}}" target="_blank"> {{$attachment->attachment->filename}} </a> <span style="font-size: 10px">размер:{{$attachment->attachment->size}}кб / дата:{{date("d-m-Y", strtotime($attachment->created_at))}}</span>
+                            <br/>
+                        @endforeach
+                    @endisset
+                </div>
+            </div>
+        <hr>
         <br>
         <div class="padding: 14px;" class="row">
 
@@ -86,17 +132,7 @@
         </div>
 
 
-        <br>
-        <div class="row">
-            <div class="col"><b>Прикрепленные файлы:</b><br>
-                @isset($attachments)
-                    @foreach($attachments as $attachment)
-                        <a class="fa fa-cloud-upload" href="{{asset('/storage/'.$attachment->attachment->path)}}" target="_blank"> {{$attachment->attachment->filename}} </a> <span style="font-size: 10px">размер:{{$attachment->attachment->size}}кб / дата:{{date("d-m-Y", strtotime($attachment->created_at))}}</span>
-                        <br/>
-                    @endforeach
-                @endisset
-            </div>
-        </div>
+
             @csrf
             @method('PUT')
 
@@ -104,10 +140,11 @@
              <input type="hidden" name="pre_work_id" value="{{$pre_work_id}}">
           <div class="row">
               <div class="col-6">
-                <button align="right" class="btn btn-info">Сохранить работу</button>
+                <button align="right" class="btn btn-info">Сохранить</button>
               </div>
               <div class="col-6">
-                   <button style="margin-left: 70%" class="btn btn-info" onclick="window.history.back()">Отмена</button>
+                  <a style="margin-left: 70%" class="btn btn-info" href="{{asset('admin/preworks/'.$pre_work_id.'/edit')}}">Отмена</a>
+
               </div>
           </div>
 
