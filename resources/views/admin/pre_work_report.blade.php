@@ -9,7 +9,7 @@
     <hr>
         <div class="row">
 
-            <div class="col-9"><h5><b>Тема: </b></h5></div>
+            <div class="col-9"><h5><b>Название: </b></h5></div>
             <div class="col-3"><h5 style="float: left;margin-right: 3px;">Предварительная работа </h5> <b>#</b></div>
 
         </div>

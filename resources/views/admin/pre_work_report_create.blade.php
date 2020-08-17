@@ -4,21 +4,21 @@
     <div class="row">
         <div class="col-2"></div>
         <div class="col-8">
-            <h4 style="width: 68%;float: left">Форма - создание отчета</h4>
-            <span style="width: 31%"><b style="color: darkred;">* поля обязательные к заполеннию</b></span>
-            <hr>
+            <h4 style="width: 68%;">Создание отчета</h4>
+
+
             <div>
                 <form action="{{route('prework-reports.store')}}" method="post" enctype="multipart/form-data">
-                    <label >Название<b>*</b></label>
+                    <label >Название</label>
                     <br>
                     <input name="pre_work_report_name" type="text" value="{{old('pre_work_report_name')}}"  class="form-control" placeholder="Введите название"><br>
-                    <label >Количество часов<b>*</b></label>
+                    <label >Количество часов</label>
                     <br>
                     <input name="pre_work_report_hours" value="{{old('pre_work_report_hours')}}"   type="number" class="form-control" placeholder="Введите число"><br>
-                    <label >Дата выполнения:<b>*</b></label>
+                    <label >Дата выполнения:</label>
                     <br>
                     <input name="pre_work_report_name_date" value="{{old('pre_work_report_name_date')}}"  type="date" class="form-control" placeholder="Введите дату"><br>
-                    <label >Объем затраченных денежных средств:<b>*</b></label>
+                    <label >Объем затраченных денежных средств:</label>
                     <br>
                     <input  name="pre_work_report_name_budget"  type="number" value="{{old('pre_work_report_name_budget') ?? '0'}}" class="form-control" placeholder="Введите число"><br>
                     <label >Прикрепить файл</label>

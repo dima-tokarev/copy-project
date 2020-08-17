@@ -8,10 +8,12 @@ use App\Attribute_Scheme_Type;
 use App\Custom_Type;
 use App\Float_Type;
 use App\History;
+use App\HistoryEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PreWorkRequest;
 use App\ObjectType;
 use App\PreWork;
+use App\PreWorkReportParticipants;
 use App\Repositories\PreWorkRepository;
 use App\Client;
 use App\Status;
@@ -20,6 +22,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Str;
+use Gate;
+use Arr;
 class PreWorkController extends AdminController
 
 {
@@ -31,9 +35,7 @@ class PreWorkController extends AdminController
     public function __construct( PreWorkRepository $pre) {
         parent::__construct();
 
-        /*   if (Gate::denies('EDIT_USERS')) {
-                   abort(403);
-               }*/
+
 
         $this->pre_rep = $pre;
 
@@ -54,6 +56,7 @@ class PreWorkController extends AdminController
     {
         //
 
+
         $pre_works = PreWork::where('author_id',Auth::user()->id)->paginate(50);
 
         $clients = Client::all();
@@ -62,9 +65,10 @@ class PreWorkController extends AdminController
 
         $users = User::all();
 
-        $filters = Attribute_Definition::all();
+        $filters = Attribute_Scheme_Type::all();
 
-        $this->content = view('admin.pre_work_show')->with(['pre_works' => $pre_works,'clients' => $clients,'statuses' => $statuses,'users' => $users,'filters' => $filters])->render();
+
+        $this->content = view('admin.pre_work_show')->with(['pre_works' => $pre_works,'clients' => $clients,'statuses' => $statuses,'users' => $users,'filters' => $filters,'data' => ''])->render();
 
         return $this->renderOutput();
     }
@@ -86,7 +90,7 @@ class PreWorkController extends AdminController
         $attributes = $this->pre_rep->getAttr($preWork);
 
 
-        $attributes =  Attribute_Definition::find($attributes);
+
 
 
         $this->content = view('admin.pre_work_create_content')->with(['attributes' => $attributes ,'object_id' => 1 ,'data'=> '','users' => $users])->render();
@@ -103,26 +107,141 @@ class PreWorkController extends AdminController
 
     public function getVal()
     {
+
         if($_POST['class'] == 'source') {
             $data = DB::table($_POST['class'])->orderBy('name')->paginate(15);
-
             $data = $data->groupBy('parent_id');
-        }else{
-            $data = DB::table($_POST['class'])->orderBy('name')->paginate(15);
+            return view('admin.pagination_data_create')->with(['data' => $data,'class' => $_POST['class']]);
+
+
+        }elseif($_POST['class'] == 'static_author'){
+            $data = DB::table('users')->select('*')->orderBy('name')->get();
+            return view('admin.pagination_data_filter')->with(['data' => $data,'class' => $_POST['class']]);
+        }
+        else{
+
+                $data = DB::table($_POST['class'])->orderBy('id')->paginate(15);
+
+                return view('admin.pagination_data_create')->with(['data' => $data, 'class' => $_POST['class']]);
+
         }
 
 
-        return view('admin.pagination_data')->with(['data' => $data,'class' => $_POST['class']]);
+    }
+
+    public function filterSearchVal()
+    {
+
+
+        if(isset($_POST['search'])) {
+
+
+            $data = DB::table('client')->where('name', 'like', $_POST['search'].'%')->orderBy('name')->paginate(15);
+
+
+            return view('admin.pagination_data_filter')->with(['data' => $data,'class' => 'client','word' => $_POST['search']]);
+
+        }
+
+    }
+
+
+
+    public function editGetVal()
+    {
+
+        if($_POST['class'] == 'source') {
+            $data = DB::table($_POST['class'])->orderBy('name')->paginate(15);
+            $data = $data->groupBy('parent_id');
+            return view('admin.pagination_data_create')->with(['data' => $data,'class' => $_POST['class']]);
+
+
+        }elseif($_POST['class'] == 'static_author'){
+            $data = DB::table('users')->select('*')->orderBy('name')->get();
+            return view('admin.pagination_data_filter')->with(['data' => $data,'class' => $_POST['class']]);
+        }
+        else{
+
+            $data = DB::table($_POST['class'])->orderBy('id')->paginate(15);
+
+            return view('admin.pagination_data')->with(['data' => $data, 'class' => $_POST['class']]);
+
+        }
 
 
     }
+
+
+    public function searchVal()
+    {
+
+
+            if(isset($_POST['search'])) {
+
+
+                $data = DB::table('client')->where('name', 'like', $_POST['search'].'%')->orderBy('name')->paginate(15);
+
+
+                return view('admin.pagination_data')->with(['data' => $data,'class' => 'client','word' => $_POST['search']]);
+
+            }
+
+
+    }
+
+    public function createSearchVal()
+    {
+
+
+        if(isset($_POST['search'])) {
+
+
+            $data = DB::table('client')->where('name', 'like', $_POST['search'].'%')->orderBy('name')->paginate(15);
+
+
+            return view('admin.pagination_data_create')->with(['data' => $data,'class' => 'client','word' => $_POST['search']]);
+
+        }
+
+
+    }
+
+
+
+    public function getValFilter()
+    {
+        if($_POST['class'] == 'source') {
+            $data = DB::table($_POST['class'])->orderBy('name')->paginate(15);
+            $data = $data->groupBy('parent_id');
+            return view('admin.pagination_data_filter')->with(['data' => $data,'class' => $_POST['class']]);
+
+
+        }elseif($_POST['class'] == 'static_author'){
+            $data = DB::table('users')->select('*')->orderBy('name')->get();
+            return view('admin.pagination_data_filter')->with(['data' => $data,'class' => $_POST['class']]);
+        }
+        else{
+            $data = DB::table($_POST['class'])->orderBy('name')->get();
+            return view('admin.pagination_data_filter')->with(['data' => $data,'class' => $_POST['class']]);
+        }
+
+
+    }
+
+
+
+
 
     public function fetch_data(Request $request)
     {
         if($request->ajax())
         {
-            $data = DB::table($_GET['name'])->orderBy('name')->paginate(10);
-            return view('admin.pagination_data')->with(['data' => $data,'class' => $_GET['name']])->render();
+
+               $data = DB::table($_GET['name'])->orderBy('name')->paginate(10);
+               return view('admin.pagination_data')->with(['data' => $data,'class' => $_GET['name']])->render();
+
+
+
         }
     }
 
@@ -140,18 +259,21 @@ class PreWorkController extends AdminController
 
             $html .= '<tr relate_option="'.$_POST['class'].'">
                 <td>
-                      <i class="fa fa-minus-square remove"></i>
-                    <label class="label-add">Тема</label>
+                      <i class="fa fa fa-times remove"></i>
+                    <label class="label-add">Название</label>
 
 
                     <select name="operator_'.$_POST["class"].'"   class="form-control select-add">
                         <option value="=" selected>Содержит</option>
-                        <option value="!=">Не Содержит</option>
+                        <option value="!=">Не содержит</option>
 
                     </select>
                       
                     <input  class="form-control input-add" type="text" name="input_'.$_POST["class"].'"  placeholder="Введите текст">
                     </td>';
+
+
+
 
         }
 
@@ -164,23 +286,28 @@ class PreWorkController extends AdminController
             $html .= '<tr relate_option="'.$_POST['class'].'">
                 <td>
                    <!-- <button class="remove">-</button>-->
-                    <i class="fa fa-minus-square remove"></i>
-                    <label class="label-add">Ответственный</label>
+                    <i class="fa fa-times remove"></i>
+                    <label style="width: 14%"  class="label-add">Ответственный</label>
 
 
-                    <select name="operator_'.$_POST["class"].'"    class="form-control select-add">
+                    <select  name="operator_'.$_POST["class"].'"    class="form-control select-add">
                         <option value="=" selected>Соответствует</option>
                         <option value="!=">Не соответствует</option>
 
-                    </select>
-                    
-                    <select  name="value_select_'.$_POST["class"].'"   id="inputState" class="form-control select-add">';
+                    </select>';
+            $html .='<div class="form-control" style="display:inline;border: none" id="select_'.$_POST['class'].'">
+                <input style="width:13%;display: inline;border-radius:20px;background: #bde0fd" class="form-control" id="select_'.$_POST['class'].Auth::user()->id.'" type="text" value="'.Auth::user()->name.'">
+                <input id="'.$_POST['class'].Auth::user()->id.'" type="hidden" name="'.$_POST['class'].']['.Auth::user()->id.']" value="'.Auth::user()->id.'">
+                </div>';
 
-            $html .= '<option selected value ="' . Auth::user()->id . '">' . Auth::user()->name . '</option >';
-            foreach ($data as $item) {
-                $html .= '<option value ="' . $item->id . '">' . $item->name . '</option >';
-            }
-            $html .= ' </select></td></tr>';
+
+            $html .= ' 
+                     <span id="elem_'.$_POST['class'].'" onclick="attr_class(this)" attr_class="'.$_POST['class'].'" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                         <strong>. . .</strong>
+                     </span>
+
+ 
+ </td></tr>';
 
         }
 
@@ -189,35 +316,66 @@ class PreWorkController extends AdminController
 
 
             $data = DB::table($_POST['class'])->select('*')->get();
-            $name_table = ObjectType::where('name', $_POST['class'])->first();
+            $name_table = Attribute_Definition::find($_POST['filter_id']);
 
 
             $html .= '<tr relate_option="'.$_POST['class'].'">
                 <td>
-                      <i class="fa fa-minus-square remove"></i>
-                    <label class="label-add">' . $name_table->attr()->first()->attr_name. '</label>
+                      <i class="fa fa-times remove"></i>
+                    <label style="width: 14%"class="label-add">' . $name_table->attr_name. '</label>
 
 
                     <select name="operator_'.$_POST["class"].'"   class="form-control select-add">
                         <option value="=" selected>Равно</option>
                         <option value="!=">Не равно</option>
+                        <option value=">">Больше</option>
+                        <option value="<">Меньше</option>
 
                     </select>
-                       <input type="hidden" name="'.$_POST["class"].'_attr_id" value="'.$name_table->attr()->first()->id.'">
+                       <input type="hidden" name="'.$_POST["class"].'_attr_id" value="'.$_POST["filter_id"].'">
                     <input  class="form-control input-add" type="number" name="input_'.$_POST["class"].'"  placeholder="Введите число">
                     </td>';
+
+
         }
+
+        if($_POST['class'] == 'string_attribute_value') {
+
+
+            $data = DB::table($_POST['class'])->select('*')->get();
+            $name_table = Attribute_Definition::find($_POST['filter_id']);
+
+
+            $html .= '<tr relate_option="'.$_POST['class'].'">
+                <td>
+                      <i class="fa fa-times remove"></i>
+                    <label style="width: 14%"class="label-add">' . $name_table->attr_name. '</label>
+
+
+                    <select name="operator_'.$_POST["class"].'"   class="form-control select-add">
+                         <option value="=" selected>Соответствует</option>
+                        <option value="!=">Не соответствует</option>
+                    </select>
+                       <input type="hidden" name="'.$_POST["class"].'_attr_id" value="'.$_POST["filter_id"].'">
+                    <input  class="form-control input-add" type="date" name="input_'.$_POST["class"].'"  placeholder="Введите число">
+                    </td>';
+
+
+        }
+
+
+
         if($_POST['class'] == 'int_attribute_values') {
 
 
             $data = DB::table($_POST['class'])->select('*')->get();
-            $name_table = ObjectType::where('name', $_POST['class'])->first();
+            $name_table = Attribute_Definition::find($_POST['filter_id']);
 
 
             $html .= '<tr relate_option="'.$_POST['class'].'">
                 <td>
-                      <i class="fa fa-minus-square remove"></i>
-                    <label style="width: 22%"  class="label-add">' . $name_table->attr()->first()->attr_name. '</label>
+                      <i class="fa fa-times remove"></i>
+                    <label style="width: 14%" class="label-add">' . $name_table->attr_name. '</label>
 
 
                     <select name="operator_'.$_POST["class"].'"   class="form-control select-add">
@@ -225,7 +383,7 @@ class PreWorkController extends AdminController
                         <option value="!=">Не равно</option>
 
                     </select>
-                       <input type="hidden" name="'.$_POST["class"].'_attr_id" value="'.$name_table->attr()->first()->id.'">
+                       <input type="hidden" name="'.$_POST["class"].'_attr_id" value="'.$_POST['filter_id'].'">
                     <input  class="form-control input-add" type="number" name="input_'.$_POST["class"].'"  placeholder="Введите число">
                     </td>';
         }
@@ -245,8 +403,8 @@ class PreWorkController extends AdminController
             $html .= '<tr relate_option="'.$_POST['class'].'">
                 <td>
                    <!-- <button class="remove">-</button>-->
-                    <i class="fa fa-minus-square remove"></i>
-                    <label class="label-add">' . $name_table->attr()->first()->attr_name . '</label>
+                    <i class="fa fa-times remove"></i>
+                    <label style="width: 14%" class="label-add">' . $name_table->attr()->first()->attr_name . '</label>
 
 
                     <select name="operator_'.$_POST["class"].'"    class="form-control select-add">
@@ -254,15 +412,32 @@ class PreWorkController extends AdminController
                         <option value="!=">Не соответствует</option>
 
                     </select>
-                    <input type="hidden" name="'.$_POST["class"].'_attr_id" value="'.$name_table->attr()->first()->id.'">
-                    <select  name="value_select_'.$_POST["class"].'"   id="inputState" class="form-control select-add">';
+                    <input type="hidden" name="'.$_POST["class"].'_attr_id" value="'.$name_table->attr()->first()->id.'">';
 
-            foreach ($data as $item) {
-                $html .= '<option value ="' . $item->id . '">' . $item->name . '</option >';
-            }
-            $html .= ' </select></td></tr>';
+            $html .='<div class="form-control" style="display:inline;border: none" id="select_'.$_POST['class'].'"></div>';
+
+
+            $html .= ' 
+                     <span id="elem_'.$_POST['class'].'" onclick="attr_class(this)" attr_class="'.$_POST['class'].'" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                         <strong>. . .</strong>
+                     </span>';
+
+            $html .= ' </td></tr>';
         }
             echo $html;
+
+    }
+
+
+
+    public function getAttr(){
+        $html ='';
+
+        if($_POST['class'] == 'static_author') {
+           $items = DB::table('users')->where('id', Auth::user()->id)->get();
+        }
+
+
 
     }
 
@@ -289,123 +464,144 @@ class PreWorkController extends AdminController
 
         /* запрос по фильтрам */
 
+     /*   dump($_POST['data']);*/
 
-
-
+    /*    dd($request->all());*/
          $sql_2 = DB::table('prework as p');
 
          $arr = array('p.*');
-         if(isset($_POST['options'])) {
+         if(isset($_POST['arr_option'])) {
+
+            $i = 0;
 
 
 
-             foreach ($_POST['options'] as $item) {
-
-                 if ($item == 'client') {
+            foreach ($_POST['arr_option'] as $item) {
 
 
-                     $sql_2 ->join('custom_attribute_value as cp', function ($join) {
-                         $join->on('cp.object_id', '=', 'p.id')
-                             ->on('p.type_id', '=', 'cp.object_type_id')
-                             ->where('cp.attr_id', '=', 2);
+                    if ($item == 'client') {
 
 
-                     })->join('client', 'client.id', '=', 'cp.value');
-
-                     array_push($arr, "client.name as client_value");
 
 
-                 }
-
-                 if ($item == 'source') {
-
-
-                     $sql_2 ->join('custom_attribute_value as so', function ($join) {
-
-                         $join->on('so.object_id', '=', 'p.id')
-                             ->on('p.type_id', '=', 'so.object_type_id')
-                             ->where('so.attr_id', '=', 4);
+                        $sql_2->join('custom_attribute_value as cp'.$i, function ($join) use($i) {
+                            $join->on('cp'.$i.'.object_id', '=', 'p.id')
+                                ->on('p.type_id', '=', 'cp'.$i.'.object_type_id')
+                                ->where('cp'.$i.'.attr_id', '=', $_POST['id_filter'][$i]);
 
 
-                     })->join('source', 'source.id', '=', 'so.value');
+                        })->leftJoin('client as cl'.$i, 'cl'.$i.'.id', '=', 'cp'.$i.'.value');
 
-                     array_push($arr, "source.name as source_value");
-
-
-                 }
-
-                 if ($item == 'prework_type') {
+                        array_push($arr, "cl".$i.".name as client_value");
 
 
-                     $sql_2 ->join('custom_attribute_value', function ($join) {
-                         $join->on('custom_attribute_value.object_id', '=', 'p.id')
-                             ->on('p.type_id', '=', 'custom_attribute_value.object_type_id')
-                             ->where('custom_attribute_value.attr_id', '=', 3);
+                    }
+
+                    if ($item == 'source') {
 
 
-                     })->join('prework_type', 'prework_type.id', '=', 'custom_attribute_value.value');
 
-                     array_push($arr, "prework_type.name as prework_type_value");
+                        $sql_2->join('custom_attribute_value as so'.$i, function ($join) use($i)  {
 
-
-                 }
-
-
-                 if ($item == 'status') {
+                            $join->on('so'.$i.'.object_id', '=', 'p.id')
+                                ->on('p.type_id', '=', 'so'.$i.'.object_type_id')
+                                ->where('so'.$i.'.attr_id', '=', $_POST['id_filter'][$i]);
 
 
-                     $sql_2 ->join('custom_attribute_value as st', function ($join) {
-                         $join->on('st.object_id', '=', 'p.id')
-                             ->on('p.type_id', '=', 'st.object_type_id')
-                             ->where('st.attr_id', '=', 5);
+                        })->leftJoin('source as sou'.$i, 'sou'.$i.'.id',  '=', 'so'.$i.'.value');
+
+                        array_push($arr, "sou".$i.".name as source_value");
 
 
-                     })->join('status', 'status.id', '=', 'st.value');
+                    }
 
-                     array_push($arr, "status.name as status_value");
-
-
-                 }
+                    if ($item == 'prework_type') {
 
 
-                 if ($item == 'float_attribute_values') {
+                        $sql_2->join('custom_attribute_value as cus'.$i, function ($join) use($i)  {
+                            $join->on('cus'.$i.'.object_id', '=', 'p.id')
+                                ->on('p.type_id', '=', 'cus'.$i.'.object_type_id')
+                                ->where('cus'.$i.'.attr_id', '=', $_POST['id_filter'][$i]);
 
 
-                     $sql_2 ->join('float_attribute_values', function ($join) {
-                         $join->on('float_attribute_values.object_id', '=', 'p.id')
-                             ->on('p.type_id', '=', 'float_attribute_values.object_type_id')
-                             ->where('float_attribute_values.attr_id', '=', 1);
+                        })->leftJoin('prework_type as pre'.$i, 'pre'.$i.'.id', '=', 'cus'.$i.'.value');
+
+                        array_push($arr, "pre".$i.".name as prework_type_value");
 
 
-                     });
-
-                     array_push($arr, "float_attribute_values.value as float_value");
+                    }
 
 
-                 }
-
-                 if ($item == 'int_attribute_values') {
+                    if ($item == 'status') {
 
 
-                     $sql_2 ->join('int_attribute_values', function ($join) {
-                         $join->on('int_attribute_values.object_id', '=', 'p.id')
-                             ->on('p.type_id', '=', 'int_attribute_values.object_type_id')
-                             ->where('int_attribute_values.attr_id', '=', 6);
+                        $sql_2->join('custom_attribute_value as st'.$i, function ($join) use($i)  {
+                            $join->on('st'.$i.'.object_id', '=', 'p.id')
+                                ->on('p.type_id', '=', 'st'.$i.'.object_type_id')
+                                ->where('st'.$i.'.attr_id', '=', $_POST['id_filter'][$i]);
 
 
-                     });
+                        })->join('status as sta'.$i, 'sta'.$i.'.id', '=', 'st'.$i.'.value');
 
-                     array_push($arr, "int_attribute_values.value as int_value");
-
-
-                 }
+                        array_push($arr, "sta".$i.".name as status_value");
 
 
-             }
+                    }
 
 
-            /* $result2 = $sql_2->get($arr);*/
+                    if ($item == 'float_attribute_values') {
 
+
+                        $sql_2->join('float_attribute_values as flo'.$i, function ($join) use($i)  {
+                            $join->on('flo'.$i.'.object_id', '=', 'p.id')
+                                ->on('p.type_id', '=', 'flo'.$i.'.object_type_id')
+                                ->where('flo'.$i.'.attr_id', '=', $_POST['id_filter'][$i]);
+
+
+                        });
+
+                        array_push($arr, "flo".$i.".value as float_value".$i);
+
+
+                    }
+
+                    if ($item == 'string_attribute_value') {
+
+
+                        $sql_2->join('string_attribute_value as str'.$i, function ($join) use($i)  {
+                            $join->on('str'.$i.'.object_id', '=', 'p.id')
+                                ->on('p.type_id', '=', 'str'.$i.'.object_type_id')
+                                ->where('str'.$i.'.attr_id', '=', $_POST['id_filter'][$i]);
+
+
+                        });
+
+                        array_push($arr, "str".$i.".value as string_value".$i);
+
+
+                    }
+
+                    if ($item == 'int_attribute_values') {
+
+
+                        $sql_2->join('int_attribute_values as int'.$i, function ($join) use($i)  {
+                            $join->on('int'.$i.'.object_id', '=', 'p.id')
+                                ->on('p.type_id', '=', 'int'.$i.'.object_type_id')
+                                ->where('int'.$i.'.attr_id', '=', $_POST['id_filter'][$i]);
+
+
+                        });
+
+                        array_push($arr, "int".$i.".value as int_value".$i);
+
+
+                    }
+
+                    $i++;
+                }
+
+
+                /* $result2 = $sql_2->get($arr);*/
 
 
 
@@ -415,13 +611,24 @@ class PreWorkController extends AdminController
 
         $sql = $sql_2;
 
+
+
         if(isset($_POST['data'])) {
 
 
 
-            if (isset($_POST['data']['operator_static_author'])) {
+            if (isset($_POST['data']['operator_static_author']) && isset($_POST['data']['static_author'])) {
 
-                $sql->where('author_id', $_POST['data']['operator_static_author'], $_POST['data']['value_select_static_author']);
+
+                if($_POST['data']['operator_static_author'] == '=')
+                {
+
+                    $sql->whereIn('author_id', $_POST['data']['static_author']);
+                }else{
+                    $sql->whereNotIn('author_id', $_POST['data']['static_author']);
+                }
+
+
 
             }
 
@@ -442,13 +649,26 @@ class PreWorkController extends AdminController
 
 
 
-            if (isset($_POST['data']['client_attr_id'])) {
-                $sql->join('custom_attribute_value as c', function ($join) {
-                    $join->on('c.object_id', '=', 'p.id')
-                        ->on('p.type_id', '=', 'c.object_type_id')
-                        ->where('c.attr_id', '=', $_POST['data']['client_attr_id'])
-                        ->where('c.value', $_POST['data']['operator_client'], $_POST['data']['value_select_client']);
-                });
+            if (isset($_POST['data']['client_attr_id']) && isset($_POST['data']['client'])) {
+
+                if($_POST['data']['operator_client']  == '=') {
+                    $sql->join('custom_attribute_value as c', function ($join) {
+                        $join->on('c.object_id', '=', 'p.id')
+                            ->on('p.type_id', '=', 'c.object_type_id')
+                            ->where('c.attr_id', '=', $_POST['data']['client_attr_id'])
+                            ->whereIn('c.value', $_POST['data']['client']);
+                    });
+                }else{
+                    $sql->join('custom_attribute_value as c', function ($join) {
+                        $join->on('c.object_id', '=', 'p.id')
+                            ->on('p.type_id', '=', 'c.object_type_id')
+                            ->where('c.attr_id', '=', $_POST['data']['client_attr_id'])
+                            ->whereNotIn('c.value', $_POST['data']['client']);
+                    });
+                }
+
+
+
             }
             if (isset($_POST['data']['float_attribute_values_attr_id'])) {
                 $sql->join('float_attribute_values as f', function ($join) {
@@ -466,29 +686,69 @@ class PreWorkController extends AdminController
                         ->where('i.value', $_POST['data']['operator_int_attribute_values'], $_POST['data']['input_int_attribute_values']);
                 });
             }
-            if (isset($_POST['data']['prework_type_attr_id'])) {
-                $sql->join('custom_attribute_value as pre', function ($join) {
-                    $join->on('pre.object_id', '=', 'p.id')
-                        ->on('p.type_id', '=', 'pre.object_type_id')
-                        ->where('pre.attr_id', '=', $_POST['data']['prework_type_attr_id'])
-                        ->where('pre.value', $_POST['data']['operator_prework_type'], $_POST['data']['value_select_prework_type']);
+
+            if (isset($_POST['data']['string_attribute_value_attr_id'])) {
+                $sql->leftJoin('string_attribute_value as str_i', function ($join) {
+                    $join->on('str_i.object_id', '=', 'p.id')
+                        ->on('p.type_id', '=', 'str_i.object_type_id')
+                        ->where('str_i.attr_id', '=', $_POST['data']['string_attribute_value_attr_id'])
+                        ->where('str_i.value', $_POST['data']['operator_string_attribute_value'], $_POST['data']['input_string_attribute_value']);
                 });
             }
-            if (isset($_POST['data']['source_attr_id'])) {
-                $sql->join('custom_attribute_value as s', function ($join) {
-                    $join->on('s.object_id', '=', 'p.id')
-                        ->on('p.type_id', '=', 's.object_type_id')
-                        ->where('s.attr_id', '=', $_POST['data']['source_attr_id'])
-                        ->where('s.value', $_POST['data']['operator_source'], $_POST['data']['value_select_source']);
-                });
+
+
+
+            if (isset($_POST['data']['prework_type_attr_id']) && isset($_POST['data']['prework_type'])) {
+                if($_POST['data']['operator_prework_type']  == '=') {
+                    $sql->join('custom_attribute_value as pre', function ($join) {
+                        $join->on('pre.object_id', '=', 'p.id')
+                            ->on('p.type_id', '=', 'pre.object_type_id')
+                            ->where('pre.attr_id', '=', $_POST['data']['prework_type_attr_id'])
+                            ->whereIn('pre.value', $_POST['data']['prework_type']);
+                    });
+                }else{
+                    $sql->join('custom_attribute_value as pre', function ($join) {
+                        $join->on('pre.object_id', '=', 'p.id')
+                            ->on('p.type_id', '=', 'pre.object_type_id')
+                            ->where('pre.attr_id', '=', $_POST['data']['prework_type_attr_id'])
+                            ->whereNotIn('pre.value', $_POST['data']['prework_type']);
+                    });
+                }
             }
-            if (isset($_POST['data']['status_attr_id'])) {
-                $sql->join('custom_attribute_value as st', function ($join) {
-                    $join->on('st.object_id', '=', 'p.id')
-                        ->on('p.type_id', '=', 'st.object_type_id')
-                        ->where('st.attr_id', '=', $_POST['data']['status_attr_id'])
-                        ->where('st.value', $_POST['data']['operator_status'], $_POST['data']['value_select_status']);
-                });
+            if (isset($_POST['data']['source_attr_id']) && isset($_POST['data']['source'])) {
+
+                if($_POST['data']['operator_source']  == '=') {
+                    $sql->join('custom_attribute_value as s', function ($join) {
+                        $join->on('s.object_id', '=', 'p.id')
+                            ->on('p.type_id', '=', 's.object_type_id')
+                            ->where('s.attr_id', '=', $_POST['data']['source_attr_id'])
+                            ->whereIn('s.value', $_POST['data']['source']);
+                    });
+                }else{
+                    $sql->join('custom_attribute_value as s', function ($join) {
+                        $join->on('s.object_id', '=', 'p.id')
+                            ->on('p.type_id', '=', 's.object_type_id')
+                            ->where('s.attr_id', '=', $_POST['data']['source_attr_id'])
+                            ->whereNotIn('s.value', $_POST['data']['source']);
+                    });
+                }
+            }
+            if (isset($_POST['data']['status_attr_id']) && isset($_POST['data']['status'])) {
+                if($_POST['data']['operator_status']  == '=') {
+                    $sql->join('custom_attribute_value as stat', function ($join) {
+                        $join->on('stat.object_id', '=', 'p.id')
+                            ->on('p.type_id', '=', 'stat.object_type_id')
+                            ->where('stat.attr_id', '=', $_POST['data']['status_attr_id'])
+                            ->whereIn('stat.value', $_POST['data']['status']);
+                    });
+                }else{
+                    $sql->join('custom_attribute_value as stat', function ($join) {
+                        $join->on('stat.object_id', '=', 'p.id')
+                            ->on('p.type_id', '=', 'stat.object_type_id')
+                            ->where('stat.attr_id', '=', $_POST['data']['status_attr_id'])
+                            ->whereNotIn('stat.value', $_POST['data']['status']);
+                    });
+                }
             }
 
 
@@ -503,104 +763,120 @@ class PreWorkController extends AdminController
         $html_content = '';
         $html_head = '';
 
-        $html_head .= '<thead>
-                    <tr>
-                    
-                        <th scope="col">#</th>
-                        <th scope="col">Тема</th>
-                        <th scope="col">Ответственный</th>';
-       if(isset($_POST['options'])) {
-           foreach ($_POST['options'] as $option) {
-               if ($option == 'status') {
-                   $html_head .= '<th scope="col">Статус</th>';
-               }
-               if ($option == 'source') {
-                   $html_head .= '<th scope="col">Источник</th>';
-               }
-               if ($option == 'prework_type') {
-                   $html_head .= '<th scope="col">Вид работ</th>';
-               }
-               if ($option == 'client') {
-                   $html_head .= '<th scope="col">Клиент</th>';
-               }
-               if ($option == 'float_attribute_values') {
-                   $html_head .= '<th scope="col">Бюджет</th>';
-               }
-               if ($option == 'int_attribute_values') {
-                   $html_head .= '<th scope="col">Оценка выполненной работы</th>';
-               }
-           }
-       }
-        $html_head .= '<th></th>';
-        $html_head .= '</tr></thead>';
 
-        if(isset($_POST['options'])) {
-            foreach ($result2 as $item) {
-                $html_content .= '<tr style="width: 1%">';
-                $html_content .= '<td style="width: 10%">' . $item->id . '</td>';
-                $html_content .= '<td style="width: 20%"><a href="./preworks/'.$item->id.'"">' . $item->name . '</a></td>';
-                $html_content .= '<td style="width: 20%">' . User::where('id', $item->author_id)->first()->name . '</td>';
-                if (isset($_POST['options'])) {
-                    foreach ($_POST['options'] as $option) {
-                        if ($option == 'float_attribute_values') {
-                            $html_content .= '<td style="width: 10%">' . $item->float_value . '</td>';
+       if(isset($_POST['table'])) {
+           $html_head .= '<th scope="col">'.$_POST["filter_name"].'</th>';
+       }
+
+
+
+        if(isset($_POST['arr_option'])) {
+
+
+
+
+                    foreach ($result2 as $item) {
+                        $html_content .='<tr>';
+
+                        $html_content .= '<td style="width: 2%">' . $item->id . '</td>';
+                        $html_content .= '<td style="width: 10%"><a href="./preworks/'.$item->id.'">' . $item->name . '</a></td>';
+                        $html_content .= '<td style="width: 10%">' . User::where('id', $item->author_id)->first()->name . '</td>';
+                        $html_content .= '<th  style="width: 10%;text-align: right">';
+
+                        if(\Gate::allows('edit_attr_admin') || \Gate::allows('edit_attr_leader') ){
+
+                            $html_content .='<div  style="margin-left: 0px" class="row">
+                                                <div >      <a class="fa fa-pencil-square-o" style="color: #2fa360" href="preworks/'.$item->id.'/edit"></a> /
+                        
+                                                </div>
+                                                <div >
+                                                    <form id="delete-form" action="preworks-delete/'.$item->id.'" method="post">
+                                                        '.csrf_field().'<button id="delete-confirm" style="margin-top: -4px;color:indianred" class="btn btn-link fa fa-trash-o"></button>
+                                                    </form>
+                                                </div>
+                                        </div>';
+
                         }
-                        if ($option == 'int_attribute_values') {
-                            $html_content .= '<td style="width: 10%;text-align: center">' . $item->int_value . '</td>';
+                        $html_content .= '</th>';
+                    $k = 0;
+                    foreach ($_POST['arr_option'] as $val) {
+                        if ($val == 'int_attribute_values') {
+                            $val = 'int_value'.$k;
+                            $html_content .= '<td style="width: 10%;text-align: center">' . $item->$val.'</td>';
                         }
-                        if ($option == 'status') {
+                        if ($val == 'status') {
                             $html_content .= '<td style="width: 10%">' . $item->status_value . '</td>';
                         }
-                        if ($option == 'source') {
-                            $html_content .= '<td style="width: 20%">' . $item->source_value . '</td>';
+                        if ($val == 'source') {
+                            $html_content .= '<td style="width: 10%">' . $item->source_value . '</td>';
                         }
-                        if ($option == 'client') {
+                        if ($val == 'client') {
                             $html_content .= '<td style="width: 10%">' . $item->client_value . '</td>';
                         }
-                        if ($option == 'prework_type') {
-                            $html_content .= '<td style="width: 20%">' . $item->prework_type_value . '</td>';
+                        if ($val == 'prework_type') {
+                            $html_content .= '<td style="width: 10%">' . $item->prework_type_value . '</td>';
                         }
-                    }
-                }
-                $html_content .= '<td style="width: 10%;text-align: right"">   <div class="row">
-                        <div class="cols-2">
-                            <a class="fa fa-pencil-square-o" style="color: #2fa360" href="preworks/'.$item->id.'/edit"></a> /
+                        if ($val == 'float_attribute_values') {
 
-                        </div>
-                        <div class="cols-2">
-                            <form id="delete-form" action="preworks-delete/'.$item->id.'" method="post">
-                            '.csrf_field().'
-                         
-                               <button id="delete-confirm" style="margin-top: -8px;color:indianred"  class="btn btn-link fa fa-trash-o"></button>
-                            </form>
-                        </div>
-                    </div></td>';
-                $html_content .= '</tr>';
-            }
+                            $val = 'float_value'.$k;
+                            $html_content .= '<td style="width: 10%">' . $item->$val.'</td>';
+                        }
+                        if ($val == 'string_attribute_value') {
+                            $val = 'string_value'.$k;
+                            $html_content .= '<td style="width: 10%">' . $item->$val.'</td>';
+                        }
+                    $k++;
+                        }
+                        $html_content .='</tr>';
+                    }
+
+
+
+
+
+
+
+            $arr_rows = [];
+            $arr_rows['html_head'] = $html_head;
+            $arr_rows['html_content'] = $html_content;
+
+           echo json_encode($arr_rows);
 
         }else{
+
+
             foreach ($result2 as $item) {
                 $html_content .= '<tr>';
-                $html_content .= '<td style="width: 1%">' . $item->id . '</td>';
-                $html_content .= '<td style="width: 40%"><a href="./preworks/'.$item->id.'">' . $item->name . '</a></td>';
-                $html_content .= '<td style="width: 40%">' . User::where('id', $item->author_id)->first()->name . '</td>';
-                $html_content .= '         <td style="text-align: right">
-                    <div class="row">
-                        <div class="cols-2">
-                            <a class="fa fa-pencil-square-o" style="color: #2fa360" href="preworks/'.$item->id.'/edit"></a> /
+                $html_content .= '<td style="width: 2%">' . $item->id . '</td>';
+                $html_content .= '<td style="width: 10%"><a href="./preworks/'.$item->id.'">' . $item->name . '</a></td>';
+                $html_content .= '<td style="width: 10%">' . User::where('id', $item->author_id)->first()->name . '</td>';
+                $html_content .= '<th  style="width: 10%;text-align: right">';
+                if(\Gate::allows('edit_attr_admin') || \Gate::allows('edit_attr_leader') ){
 
-                        </div>
-                        <div class="cols-2">
-                            <form id="delete-form" action="/preworks-delete/'.$item->id.'" method="post">
-                                  '.csrf_field().'<button id="delete-confirm" style="margin-top: -8px;color:indianred" class="btn btn-link fa fa-trash-o"></button>
-                            </form>
-                        </div>
-                    </div>
-                   </td>';
+                    $html_content .='<div  style="margin-left: 0px" class="row">
+                                                <div >      <a class="fa fa-pencil-square-o" style="color: #2fa360" href="preworks/'.$item->id.'/edit"></a> /
+                        
+                                                </div>
+                                                <div >
+                                                    <form id="delete-form" action="preworks-delete/'.$item->id.'" method="post">
+                                                        '.csrf_field().'<button id="delete-confirm" style="margin-top: -4px;color:indianred" class="btn btn-link fa fa-trash-o"></button>
+                                                    </form>
+                                                </div>
+                                        </div>';
+
+                }
+                $html_content .= '</th>';
                 $html_content .= '</tr>';
             }
+
+            $arr_rows = [];
+
+            $arr_rows['html_content'] = $html_content;
+
+            echo json_encode($arr_rows);
+
         }
-           echo $html_head.$html_content;
+
 
 
     }
@@ -612,16 +888,70 @@ class PreWorkController extends AdminController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(PreWork $preWork ,$id)
     {
 
         $attribute_cust = '';
         $aliases = [];
 
-         $pre_work = PreWork::find($id);
+
+        $attributes = $this->pre_rep->getAttr($preWork);
+
+        $attr_sort = [];
+
+        foreach ($attributes as $attribute){
+            $obj = ObjectType::find($attribute->attr()->get()->first()->attr_type);
+            $attr_def = $attribute->attr()->get()->first()->attr_name;
+
+            if($obj->type == 'custom') {
+
+                $query = DB::table('custom_attribute_value')->where('object_id', $id)->where('object_type_id', 1)->where('attr_id', $attribute->attr()->get()->first()->id)->get();
+
+                $query2 = DB::table($obj->name)->where('id',$query[0]->value)->first();
+
+                $query[0]->value_table = isset($query2->name) ? $query2->name : '';
+                $query[0]->attr_name = $attr_def;
+                $query[0]->object_type = $obj->type;
+
+
+                $attr_sort[$obj->name][] = $query;
+
+
+            }
+            if($obj->type == 'float') {
+                $query = DB::table($obj->name)->where('object_id', $id)->where('object_type_id', 1)->where('attr_id', $attribute->attr()->get()->first()->id)->get();
+                $query[0]->attr_name = $attr_def;
+                $query[0]->object_type = $obj->type;
+                $attr_sort[$obj->name][] = $query;
+            }
+            if($obj->type == 'int') {
+                $query = DB::table($obj->name)->where('object_id', $id)->where('object_type_id', 1)->where('attr_id', $attribute->attr()->get()->first()->id)->get();
+                $query[0]->attr_name = $attr_def;
+                $query[0]->object_type = $obj->type;
+                $attr_sort[$obj->name][] = $query;
+
+
+            }
+            if($obj->type == 'string') {
+                $query = DB::table($obj->name)->where('object_id', $id)->where('object_type_id', 1)->where('attr_id', $attribute->attr()->get()->first()->id)->get();
+                $query[0]->attr_name = $attr_def;
+                $query[0]->object_type = $obj->type;
+                $attr_sort[$obj->name][] = $query;
+
+
+            }
+
+        }
+
+
+
+
+
+        $pre_work = PreWork::find($id);
 
          $attr = Custom_Type::where('object_id',$id)->get();
          $attr2 = Float_Type::where('object_id',$id)->get();
+         $attr_string = DB::table('string_attribute_value')->where('object_id',$id)->get();
 
         /*custom type*/
          $sql = DB::table('custom_attribute_value');
@@ -636,7 +966,12 @@ class PreWorkController extends AdminController
 
             $value = DB::table($custom->attr_type)->select('name')->where('id',$custom->value_type)->first();
 
-            $attr[$i]->value_attr = $value->name;
+            if(isset($value->name)){
+                $attr[$i]->value_attr = $value->name;
+            }else{
+                $attr[$i]->value_attr = '';
+            }
+
             $i++;
         }
         /*float type*/
@@ -657,6 +992,16 @@ class PreWorkController extends AdminController
         $attr3 = $sql3->get(array('attribute_definitions.attr_name as attr_name','int_attribute_values.value as value_type','object_types.name as  attr_type','attribute_definitions.id as id_attr'));
 
 
+        /*string type*/
+        $sql4 = DB::table('string_attribute_value');
+        $sql4->join('attribute_definitions','attribute_definitions.id','=','string_attribute_value.attr_id')
+            ->where('string_attribute_value.object_id','=',$id)
+            ->join('object_types','object_types.id','=','attribute_definitions.attr_type');
+
+        $attr4 = $sql4->get(array('attribute_definitions.attr_name as attr_name','string_attribute_value.value as value_type','object_types.name as  attr_type','attribute_definitions.id as id_attr'));
+
+
+
 
 
         $attachments = Attachment_link::where('object_id',$id)->get();
@@ -664,21 +1009,25 @@ class PreWorkController extends AdminController
         $history = History::where('object_id',$id)->where('object_type_id',1)->get();
 
 
-        $com = $pre_work->commentsPreWork->where('object_type_id',1)->groupBy('parent_id');
-        $count = count($pre_work->commentsPreWork->where('object_type_id',1));
+      /*  $com = $pre_work->commentsPreWork->where('object_type_id',1)->groupBy('parent_id');*/
 
+     /*   $count = count($pre_work->commentsPreWork->where('object_type_id',1));*/
+
+        $participants = PreWorkReportParticipants::where('prework_id',$id)->get();
 
         $this->content = view('admin.pre_work_current')->with([
 
             'pre_works' => $pre_work,
-            'attrs' => $attr,
+            'attrs' => $attr_sort,
+            'string_attr' => $attr4,
             'float_attr' => $attr2,
             'int_attr' => $attr3,
             'history' => $history,
             'attachments' => $attachments,
-            'reports' => $pre_work->report()->get(),
-            'com' => $com,
-            'count' => $count
+            'reports' => '',
+            'com' => '',
+            'count' => '',
+            'participants' => $participants
 
 
         ])->render();
@@ -692,73 +1041,106 @@ class PreWorkController extends AdminController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(PreWork $preWork, $id)
     {
-        $attribute_cust = '';
-        $aliases = [];
-        $change_attr = [];
+
+        $attributes = $this->pre_rep->getAttr($preWork);
+
+        $attr_sort = [];
+
+        foreach ($attributes as $attribute){
+          $obj = ObjectType::find($attribute->attr()->get()->first()->attr_type);
+          $attr_def = $attribute->attr()->get()->first()->attr_name;
+
+            if($obj->type == 'custom') {
+
+              $query = DB::table('custom_attribute_value')->where('object_id', $id)->where('object_type_id', 1)->where('attr_id', $attribute->attr()->get()->first()->id)->get();
+
+              $query2 = DB::table($obj->name)->where('id',$query[0]->value)->first();
+
+                $query[0]->value_table = isset($query2->name) ? $query2->name : '';
+                $query[0]->attr_name = $attr_def;
+                $query[0]->object_type = $obj->type;
 
 
-        $pre_work = PreWork::find($id);
 
-        $attr = Custom_Type::where('object_id',$id)->get();
-        $attr2 = Float_Type::where('object_id',$id)->get();
+                if($obj->name == 'status' && Gate::allows('edit_attr_leader') == true || Gate::allows('edit_attr_admin') == true  || Gate::allows('edit_attr_manager') == true ) {
+                    $attr_sort[$obj->name][] = $query;
+                }else{
+                    if($obj->name != 'status' && Gate::allows('edit_attr_admin') == true  || Gate::allows('edit_attr_manager') == true){
+                        $attr_sort[$obj->name][] = $query;
+                    }
+                }
 
-        /*custom type*/
-        $sql = DB::table('custom_attribute_value');
-        $sql->join('attribute_definitions','attribute_definitions.id','=','custom_attribute_value.attr_id')
-            ->where('custom_attribute_value.object_id','=',$id)
-            ->join('object_types','object_types.id','=','attribute_definitions.attr_type');
+            }
+            if($obj->type == 'float') {
+                $query = DB::table($obj->name)->where('object_id', $id)->where('object_type_id', 1)->where('attr_id', $attribute->attr()->get()->first()->id)->get();
+                $query[0]->attr_name = $attr_def;
+                $query[0]->object_type = $obj->type;
+                $attr_sort[$obj->name][] = $query;
+            }
+            if($obj->type == 'int') {
+                $query = DB::table($obj->name)->where('object_id', $id)->where('object_type_id', 1)->where('attr_id', $attribute->attr()->get()->first()->id)->get();
+                $query[0]->attr_name = $attr_def;
 
-        $attr = $sql->get(array('attribute_definitions.attr_name as attr_name','custom_attribute_value.value as value_type','object_types.name as  attr_type','attribute_definitions.id as id_attr'));
-
-        $i = 0;
-        foreach ($attr as $custom){
-
-            $value = DB::table($custom->attr_type)->select('name')->where('id',$custom->value_type)->first();
-
-            $attr[$i]->value_attr = $value->name;
-            $i++;
-        }
-        /*float type*/
-        $sql2 = DB::table('float_attribute_values');
-        $sql2->join('attribute_definitions','attribute_definitions.id','=','float_attribute_values.attr_id')
-            ->where('float_attribute_values.object_id','=',$id)
-            ->join('object_types','object_types.id','=','attribute_definitions.attr_type');
-
-        $attr2 = $sql2->get(array('attribute_definitions.attr_name as attr_name','float_attribute_values.value as value_type','object_types.name as  attr_type','attribute_definitions.id as id_attr'));
+                $query[0]->object_type = $obj->type;
 
 
-        /*int type*/
-        $sql3 = DB::table('int_attribute_values');
-        $sql3->join('attribute_definitions','attribute_definitions.id','=','int_attribute_values.attr_id')
-            ->where('int_attribute_values.object_id','=',$id)
-            ->join('object_types','object_types.id','=','attribute_definitions.attr_type');
-
-        $attr3 = $sql3->get(array('attribute_definitions.attr_name as attr_name','int_attribute_values.value as value_type','object_types.name as  attr_type','attribute_definitions.id as id_attr'));
-
-
-        $attachments = Attachment_link::where('object_id',$id)->get();
+                if($query[0]->attr_id == 6 && Gate::allows('edit_attr_leader') == true || Gate::allows('edit_attr_admin') == true  || Gate::allows('edit_attr_manager') == true ) {
+                    $attr_sort[$obj->name][] = $query;
+                }else{
+                    if(Gate::allows('edit_attr_admin') == true  || Gate::allows('edit_attr_manager') == true){
+                        $attr_sort[$obj->name][] = $query;
+                    }
+                }
 
 
-        foreach ($attr as $item)
-        {
+            }
+            if($obj->type == 'string') {
+                $query = DB::table($obj->name)->where('object_id', $id)->where('object_type_id', 1)->where('attr_id', $attribute->attr()->get()->first()->id)->get();
+                $query[0]->attr_name = $attr_def;
+                $query[0]->object_type = $obj->type;
 
-            if($item->attr_type == 'source'){
-                $c_attr = DB::table($item->attr_type)->where('id','!=',$item->value_type)->where('parent_id','!=',0)->get();
-                $change_attr[$item->attr_type] = $c_attr;
-            }else{
+                if(Gate::allows('edit_attr_admin') == true  || Gate::allows('edit_attr_manager') == true) {
+                    $attr_sort[$obj->name][] = $query;
+                }
 
-                $c_attr = DB::table($item->attr_type)->where('id','!=',$item->value_type)->get();
-                $change_attr[$item->attr_type] = $c_attr;
             }
 
         }
 
 
+        $pre_work = PreWork::find($id);
+
+        $attachments = Attachment_link::where('object_id',$id)->get();
+
+
+
+        $participants = PreWorkReportParticipants::where('prework_id',$id)->get();
+
         $users = User::all();
 
-        $this->content = view('admin.prework_edit')->with(['pre_works' => $pre_work,'attrs' => $attr,'float_attr' => $attr2,'int_attr' => $attr3, 'attachments' => $attachments,'change_attrs' => $change_attr, 'pre_work_id' => $id ,'users' => $users])->render();
+
+/*
+        if(Gate::allows('edit_attr_leader') || Gate::allows('edit_attr_leader') && $pre_work->user_id === \Auth::user()->id)
+        {
+
+
+
+        }*/
+
+            $this->content = view('admin.prework_edit')->with([
+
+                'pre_works' => $pre_work,
+                'attrs' => $attr_sort,
+                'participants' => $participants,
+                'attachments' => $attachments,
+                'pre_work_id' => $id ,
+                'data' => '',
+                'users' => $users])->render();
+
+
+
 
         return $this->renderOutput();
 

@@ -40,7 +40,7 @@ class PreWorkReportRequest extends FormRequest
     public function messages()
     {
         return [
-            'pre_work_report_name.required' => 'Не заполнено поле "Тема Отчета"',
+            'pre_work_report_name.required' => 'Не заполнено поле "Название отчета"',
             'pre_work_report_name_date.required' => 'Не заполнена "дата выполнения"',
             'pre_work_report_hours.required' => 'Не указано количество часов',
 

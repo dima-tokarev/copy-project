@@ -11037,7 +11037,7 @@ a.text-dark:focus {
     float: left;
     display: block;
     margin: 0;
-    padding: 0px 25px 25px;
+    padding: 15px 25px 25px;
 }
 
 .menubar nav ul li ul li>a {
@@ -11307,6 +11307,43 @@ a.meanmenu-reveal {
 .label-add{
   margin-right: 20px;
   width:10%;
+}
+
+
+.prokrutka {
+  height:850px; /* высота нашего блока */
+  background: #fff; /* цвет фона, белый */
+/*  border: 1px solid #C1C1C1; !* размер и цвет границы блока *!*/
+/*  overflow-x: scroll; !* прокрутка по горизонтали *!*/
+  overflow-y: scroll; /* прокрутка по вертикали */
+}
+
+.select_row {
+  position: relative;
+  display: inline-block;
+}
+.select_row:after {
+  content: url("../img/ww.png");
+  padding: 0 8px;
+  font-size: 12px;
+  position: absolute;
+  right: 8px;
+  top: 4px;
+  z-index: 1;
+  text-align: center;
+  width: 10%;
+  height: 100%;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.select_row > select {
+  border: none;
+  padding-right: 25px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+ /* background: url(http://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/br_down.png) no-repeat right #ddd;*/
 }
 
 

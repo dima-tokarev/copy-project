@@ -24,7 +24,7 @@ class UserRequest extends Request
 	    $validator->sometimes('password', 'required|min:6|confirmed', function($input)
 	    {
 
-			if(!empty($input->password) || ((empty($input->password) && $this->route()->getName() !== 'admin.users.update'))) {
+			if(!empty($input->password) || ((empty($input->password) && $this->route()->getName() !== 'user_update'))) {
 				return TRUE;
 			}
 
@@ -41,8 +41,7 @@ class UserRequest extends Request
      */
     public function rules()
     {
-        $id = (isset($this->route()->parameter('users')->id)) ? $this->route()->parameter('users')->id : '';
-
+        $id = (isset($this->route()->parameters['id'])) ? $this->route()->parameters['id'] : '';
 
 
 		return [

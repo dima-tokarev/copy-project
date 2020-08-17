@@ -15,6 +15,7 @@
             <th>#</th>
             <th>Имя</th>
             <th>Email</th>
+            <th>Роль</th>
           {{--  <th style="width: 36px;"></th>--}}
         </tr>
         </thead>
@@ -25,8 +26,9 @@
             @foreach($users as $user)
         <tr>
             <td>{{ $user->id }}</td>
-            <td>{{ $user->name }}</td>
+            <td><a href="{{route('users.edit',$user->id)}}">{{ $user->name }}</a></td>
             <td>{{ $user->email }}</td>
+            <td>{{ $user->roles->first()->name }}</td>
         </tr>
         @endforeach
         </tbody>

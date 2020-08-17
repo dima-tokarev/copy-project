@@ -6,7 +6,7 @@
 
 
 
-                <img alt="" src="{{asset('/img/avatar.png')}}" class="avatar" height="75" width="75" />
+                <img alt="" src="/storage/{{asset('/img/avatar.png')}}" class="avatar" height="75" width="75" />
                 <cite class="fn">{{$item->user->name}}</cite>
             </div>
             <!-- .comment-author .vcard -->

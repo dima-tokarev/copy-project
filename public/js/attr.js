@@ -1,6 +1,6 @@
 $(document).ready(function () {
 
-    $('form#add_form > :checkbox').on('change', function() {
+/*    $('form#add_form > :checkbox').on('change', function() {
         let checkbox = $(this);
         console.log(checkbox);
 
@@ -13,5 +13,5 @@ $(document).ready(function () {
         }
 
 
-    });
+    });*/
 });

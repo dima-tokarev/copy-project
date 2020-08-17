@@ -15,7 +15,7 @@
                                     <ul style="color: gray" class="sub-menu">
                                       {{--  <li><a style="color: gray" href="#">Предварительные работы</a></li>--}}
 
-                                          <li><a href="#">Предварительные работы</a></li>
+                                          <li><a href="{{route('preworks.index')}}">Предварительные работы</a></li>
                                        <li><a href="#">Подготовка контракта</a></li>
                                     </ul>
                                 </li>
@@ -43,7 +43,29 @@
                         </li>
                         <li><a  style="color: gray" href="javascript:void(0);">Пункт 1</a></li>
                         <li><a style="color:gray" href="javascript:void(0);">Пункт 2</a></li>
-                        <li><a style="color:gray" href="javascript:void(0);">Пункт 3</a></li>
+                        @canany(['edit_attr_admin'])
+                            <li>
+                                <a style="color: gray;" href="#">Администрирование</a>
+                                <ul class="sub-menu">
+                                    <li>
+                                        <a href="#">Справочники</a>
+                                        <ul class="sub-menu">
+                                            <li><a href="{{route('clients.index')}}">Клиенты</a></li>
+                                            <li></li>
+
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a href="#">Управление</a>
+                                        <ul class="sub-menu">
+                                            <li><a href="{{route('users.index')}}">Пользователи</a></li>
+                                            <li></li>
+                                        </ul>
+                                    </li>
+
+                                </ul>
+                            </li>
+                           @endcanany
                     </ul>
                 </nav>
             </div>

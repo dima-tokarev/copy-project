@@ -10,7 +10,7 @@ class PreWork extends Model
     public $table = "prework";
 
     protected $fillable = [
-        'name', 'type_id','status_id','description','author_id','responsible_id'
+        'name', 'type_id','status_id','description','author_id','responsible_id','user_id'
     ];
 
 
@@ -19,6 +19,11 @@ class PreWork extends Model
     public function author()
     {
        return  $this->belongsTo('App\User','author_id');
+    }
+
+    public function user()
+    {
+        return  $this->belongsTo('App\User','user_id');
     }
 
     public function attribute_object()

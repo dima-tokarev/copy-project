@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Avatar;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -9,6 +10,8 @@ use App\Http\Requests\UserRequest;
 use App\Http\Controllers\Controller;
 use App\Repositories\UsersRepository;
 use Gate;
+use App\User;
+use DB;
 
 
 
@@ -67,7 +70,9 @@ class UsersController extends AdminController
         }, []);;*/
 
  /*       $this->content = view(env('THEME').'.admin.users_create_content')->with('roles',$roles)->render();*/
-        $this->content = view(env('THEME').'.admin.users_create_content')->with('title',$this->title)->render();
+
+
+        $this->content = view(env('THEME').'.admin.users_create_content')->with(['title',$this->title,'roles' => $this->getRoles()])->render();
         return $this->renderOutput();
     }
 
@@ -108,16 +113,20 @@ class UsersController extends AdminController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(User $user)
+    public function edit($id)
     {
-        $this->title =  'Редактирование пользователя - '. $user->name;
+        /*$this->title =  'Редактирование пользователя - '. $user->name;*/
 
-        $roles = $this->getRoles()->reduce(function ($returnRoles, $role) {
+        $user = User::find($id);
+        $avatar = Avatar::where('user_id',$id)->first();
+  
+
+/*        $roles = $this->getRoles()->reduce(function ($returnRoles, $role) {
             $returnRoles[$role->id] = $role->name;
             return $returnRoles;
-        }, []);
+        }, []);*/
 
-        $this->content = view(env('THEME').'.admin.users_create_content')->with(['roles'=>$roles,'user'=>$user])->render();
+        $this->content = view(env('THEME').'.admin.users_edit')->with(['user'=>$user,'avatar' => $avatar, 'roles' => $this->getRoles()])->render();
 
         return $this->renderOutput();
 
@@ -130,14 +139,24 @@ class UsersController extends AdminController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UserRequest $request, User $user)
+    public function update(UserRequest $request)
     {
         //
-        $result = $this->us_rep->updateUser($request,$user);
+        $result = $this->us_rep->updateUser($request);
         if(is_array($result) && !empty($result['error'])) {
             return back()->with($result);
         }
-        return redirect('/admin')->with($result);
+        return redirect('/admin/preworks/')->with($result);
+    }
+
+    public function updateUser(UserRequest $request)
+    {
+        //
+        $result = $this->us_rep->updateUser($request);
+        if(is_array($result) && !empty($result['error'])) {
+            return back()->with($result);
+        }
+        return redirect('/admin/preworks/')->with($result);
     }
 
     /**

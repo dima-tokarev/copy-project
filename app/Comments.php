@@ -23,6 +23,8 @@ class Comments extends Model
         return $this->belongsTo('App\User','author_id');
     }
 
+
+
     public function PreWorkReportsComments()
     {
         return $this->belongsTo('App\PreworkReport','object_id');

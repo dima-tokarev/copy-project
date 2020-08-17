@@ -9,8 +9,18 @@
         <div style="text-align: right;margin-bottom: 10px" class="col-12">
 
                 <div>
-                    <a class="fa fa-pencil-square-o" href="{{route('preworks.edit',$pre_works->id)}}"> Редактировать</a> /
-                    <a class="fa fa-bookmark" href="{{route('prework-reports.all',$pre_works->id)}}"> Отразить результат</a>
+
+
+                   @if(\Auth::user()->id == $pre_works->user_id || \Auth::user()->id == $pre_works->author_id)
+
+                               <a class="fa fa-pencil-square-o" href="{{route('preworks.edit',$pre_works->id)}}"> Редактировать</a>
+
+                   @elseif(\Gate::allows('edit_attr_admin') || \Gate::allows('edit_attr_leader'))
+
+                           <a class="fa fa-pencil-square-o" href="{{route('preworks.edit',$pre_works->id)}}"> Редактировать</a>
+                   @else
+                   {{--    false --}}
+                   @endif
                 </div>
 
         </div>
@@ -18,7 +28,7 @@
 
     <div class="row">
 
-        <div class="col-7"><b>Тема: </b>{{$pre_works->name}}</div>
+        <div class="col-7"><b>Название: </b>{{$pre_works->name}}</div>
 
         <div style="text-align: right" class="col-5"><b>Предварительная работа  #{{$pre_works->id}}</b></div>
 
@@ -28,79 +38,111 @@
         <div class="col-12"></div>
 
     </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-12"><b>Автор: </b>{{$pre_works->user->name}} / <b>дата добавления: </b> {{date("d-m-Y", strtotime($pre_works->created_at))}}</div>
+
+                    </div>
     <hr>
         <div class="row">
-            <div class="col-12"><b>Ответственный: </b>{{$pre_works->author->name}} / <b>дата добавления: </b> {{date("d-m-Y", strtotime($pre_works->created_at))}}</div>
+            <div class="col-12"><b>Ответственный: </b>{{$pre_works->author->name}}</div>
 
         </div>
     <hr>
-    <br/>
-     <div style="margin-bottom: 23px" class="row">
-         <div class="col-12">
-             <b>Основные атрибуты:</b>
-          
-         </div>
-         <br>
-     </div>
+
+
 
 
     <div class="row">
-        @foreach($attrs as $attr)
-        <div class="col-12"><b>{{$attr->attr_name}}:</b> <span>{{$attr->value_attr}}</span>
-            <hr>
-        </div>
+        @foreach($attrs as $key => $items)
 
+            @foreach($items as $item)
+
+                @foreach($item as $attribute)
+                    @if($attribute->object_type == 'custom')
+                        <div class="col-12"><b>{{$attribute->attr_name}}:</b> <span>{{$attribute->value_table}}</span>
+                            <hr>
+                        </div>
+                     @else
+                        <div class="col-12"><b>{{$attribute->attr_name}}:</b> <span>{{$attribute->value}}</span>
+                            <hr>
+                        </div>
+                    @endif
+                 @endforeach
+            @endforeach
         @endforeach
     </div>
 
-        <div class="row">
-
-            @foreach($float_attr as $attr)
-                <div class="col-12"><b>{{$attr->attr_name}}:</b> <span>{{$attr->value_type}}</span>
-                    <hr>
-                </div>
-
-            @endforeach
 
 
-                @foreach($int_attr as $attr)
-                    <div class="col-12"><b>{{$attr->attr_name}}:</b> <span>{{$attr->value_type}}</span>
-                        y.e
+                    <div class="row">
+                        <div class="col-12">
+                            <h6><b>Участники со стороны заказчика:</b></h6>
+                            <br>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>ФИО</th>
+                                    <th>Должность</th>
+                                    <th>Контактные данные</th>
+                                    <th>Агент</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @isset($participants)
+                                    @foreach($participants as $participant)
+                                        <tr>
+                                            <td style="padding-top: 19px">{{$participant->id}}</td>
+                                            <td><input disabled name="participants[fio][{{$participant->id}}]]" class="form-control" type="text" value="{{$participant->name}}"></td>
+                                            <td><input disabled name="participants[position][{{$participant->id}}]]"class="form-control" type="text" value="{{$participant->position}}"></td>
+                                            <td><input disabled name="participants[contacts][{{$participant->id}}]]"class="form-control" type="text" value="{{$participant->contacts}}"></td>
+                                            <td>
+                                                <select style="width: 73px;" disabled class="form-control" name="participants[is_agent][{{$participant->id}}]]">
+                                                    <option selected>{{$participant->is_agent}}</option>
+                                                    @if($participant->is_agent == 'Да')
+                                                        <option>Нет</option>
+                                                    @else
+                                                        <option>Да</option>
+                                                    @endif
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endisset
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                @endforeach
-        </div>
-        <div class="row">
 
 
 
-        </div>
-
-        <hr>
-        <br>
         <div  class="row">
 
                 <div class="col"><b>Описание:</b></div>
 
         </div>
         <div class="row">
-
-          <div  style="margin: 13px;min-height: 100px" class="form-control" disabled>{!! $pre_works->description  !!}</div>
-        <br>
+          <div class="col-12">
+          <textarea id="textarea_comm" style="min-height: 100px" class="form-control" disabled>{!! $pre_works->description  !!}</textarea>
+          </div>
+              <br>
 
         </div>
+                    <br>
                     @if(count($attachments) > 0)
         <div class="row">
             <div class="col"><b>Прикрепленные файлы:</b><br>
             @isset($attachments)
                 @foreach($attachments as $attachment)
-                   <a class="fa fa-cloud-upload" href="{{asset('/storage/'.$attachment->attachment->path)}}" target="_blank"> {{$attachment->attachment->filename}} </a> <span style="font-size: 10px">размер:{{$attachment->attachment->size}}кб / дата:{{date("d-m-Y", strtotime($attachment->created_at))}}</span>
+                   <a class="fa fa-cloud-upload" href="{{asset('/storage/app/public/'.$attachment->attachment->path)}}" target="_blank"> {{$attachment->attachment->filename}} </a> <span style="font-size: 10px">размер:{{$attachment->attachment->size}}кб / дата:{{date("d-m-Y", strtotime($attachment->created_at))}}</span>
                    <br/>
                 @endforeach
             @endisset
             </div>
         </div>
                     @endif
-                    @if(count($reports) > 0)
+{{--                    @if(count($reports) > 0)
                     <hr>
         <div class="row">
 
@@ -120,44 +162,64 @@
 
             @endif
                         <hr>
-                    @endif
+                    @endif--}}
                     @if(count($history) > 0)
 
+                     <br>
+                        <div class="row">
+                            <div class="col-12">
+                             <b>История:</b>
+                            </div>
+                        </div>
 
-        <div class="row">
+                        <br>
+                        @foreach($history as $value)
+                    <div style="margin-bottom: 20px;background-color: #f5f5f5;padding: 11px;border-radius: 10px;" class="row">
+                        <br>
+                        <div   class="col-3">
 
-            <div class="col-12">
-                <b>История:</b>
 
-                <br>
-                <table class="table">
-                    <thead>
-                        <td>#</td>
-                        <th>Событие</th>
-                        <th>Пользователь</th>
-                        <th>Дата</th>
+                                <span>{{\App\User::find($value->author_id)->name}}</span>
 
-                    </thead>
-                    @foreach($history as $value)
-                        <tr>
-                        <td>{{$value->id}}</td>
-                        <td>
-                            @if($value->event_comment == 'Добавление документа')
-                            <a href="/storage/{{\App\Attachment_link::find($value->add_object_id)->first()->attachment->path}}"> {{$value->event_comment}} ({{\App\Attachment_link::find($value->add_object_id)->first()->attachment->filename}})</a>
-                            @else
-                                {{$value->event_comment}}
+                        </div>
+                        <div class="col-9">
+                            <div style="border-bottom: 1px solid #f6f6f6" class="row">
+                                <div  class="col-9">
+                                    <span>Добавлено:  {{date('d.n.Y h:m',strtotime($value->created_at))}}</span>
+                                </div>
+                            </div>
+                            @if(count($value->historyEvent) > 0)
+                                @foreach($value->historyEvent as $val)
+
+                                    <span style="font-size: 10px">{{$val->event_comment}}</span><br>
+                                    {{--         <tr>
+                                             <td>{{$value->id}}</td>
+                                             <td>
+                                                 @if($value->event_comment == 'Добавление документа')
+                                                 <a href="/storage/{{\App\Attachment_link::find($value->add_object_id)->first()->attachment->path}}"> {{$value->event_comment}} ({{\App\Attachment_link::find($value->add_object_id)->first()->attachment->filename}})</a>
+                                                 @else
+                                                     {{$values->event_comment}}
+                                                 @endif
+                                             </td>
+
+                                             </tr>--}}
+
+                                @endforeach
                             @endif
-                        </td>
-                        <td>{{\App\User::find($value->author_id)->name}}</td>
-                        <td>{{date('d.n.Y',strtotime($value->created_at))}}</td>
-                        </tr>
-                    @endforeach
-                </table>
 
+                            @if(count($value->historyComment) > 0)
+
+                                <br><span>Комментарий: </span>
+                                @foreach($value->historyComment as $val)
+
+                                    <span style="font-size: 10px">{!! $val->comment !!} </span>
+                                @endforeach
+                            @endif
             </div>
         </div>
+                        @endforeach
                     @endif
-        <br>
+    {{--    <br>
         <div class="row">
             <div class="col-12">
 
@@ -209,7 +271,7 @@
 
 
             </div>
-        </div>
+        </div>--}}
 
 
 
@@ -219,7 +281,6 @@
         <div class="wrap_result"></div>
     </div>
 </div>
-
 
 
 

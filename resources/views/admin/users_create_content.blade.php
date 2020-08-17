@@ -20,11 +20,10 @@
     </div>
     <div class="form-group">
         <label for="exampleFormControlSelect1">Вырать роль пользователя</label>
-        <select class="form-control" id="exampleFormControlSelect1">
-            <option>Администратор</option>
-            <option>Менеджер</option>
-            <option>Автор</option>
-
+        <select name="role" class="form-control" id="exampleFormControlSelect1">
+           @foreach($roles as $role)
+            <option value="{{$role->id}}">{{$role->name}}</option>
+           @endforeach
         </select>
     </div>
 {{--    <div class="form-group">

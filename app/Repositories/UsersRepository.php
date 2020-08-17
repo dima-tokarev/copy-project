@@ -2,7 +2,9 @@
 
 namespace App\Repositories;
 
+use App\Avatar;
 use App\User;
+use Illuminate\Support\Facades\Hash;
 
 class UsersRepository extends Repository
 {
@@ -29,16 +31,18 @@ class UsersRepository extends Repository
             'password' => bcrypt($data['password']),
         ]);
 
-      /*  if($user) {
-            $user->roles()->attach($data['role_id']);
-        }*/
+        if($user) {
+            $user->roles()->attach($data['role']);
+        }
+
+
 
         return ['status' => 'Пользователь добавлен'];
 
     }
 
 
-    public function updateUser($request, $user) {
+    public function updateUser($request) {
 
 
    /*     if (\Gate::denies('edit',$this->model)) {
@@ -47,14 +51,69 @@ class UsersRepository extends Repository
 
         $data = $request->all();
 
-        if(isset($data['password'])) {
-            $data['password'] = bcrypt($data['password']);
+        $user = User::find($data['user_id']);
+
+
+        $data2 = $request->except(['_token','user_id','avatar','password_confirmation']);
+
+        if($data2['password'] == '') {
+            $user->update([
+                'name' => $data2['name'],
+                'email' => $data2['email'],
+            ]);
+        }else{
+            $user->update([
+                'name' => $data2['name'],
+                'email' => $data2['email'],
+                'password' => bcrypt($data['password'])
+            ]);
         }
 
-        $user->fill($data)->update();
-        $user->roles()->sync([$data['role_id']]);
+        /*обновляем роль*/
 
-        return ['status' => 'Пользователь изменен'];
+        if(isset($data['role'])) {
+            $user->roles()->sync($data['role']);
+        }
+
+        if($request->file('avatar')) {
+
+
+            $img_name = $request->file('avatar')->getClientOriginalName();
+            $path = $request->file('avatar')->store('avatars', 'public');
+
+            $avatar = Avatar::where('user_id',$data['user_id'])->get();
+
+            if(count($avatar) > 0){
+
+                Avatar::where('user_id',$data['user_id'])->update([
+                    'filename' => $img_name,
+                    'path' => $path,
+                    'user_id' => $data['user_id']
+
+                ]);
+
+            }else{
+                Avatar::create([
+
+                    'filename' => $img_name,
+                    'path' => $path,
+                    'user_id' => $data['user_id']
+
+                ]);
+            }
+
+
+
+        }
+
+
+
+
+
+     /*   $user->fill($data)->update();*/
+
+
+        return ['status' => 'Профиль изменен'];
 
     }
 

@@ -14,4 +14,15 @@ class History extends Model
     ];
 
 
+    public function historyComment()
+    {
+        return  $this->hasMany('App\HistoryComment');
+    }
+
+    public function historyEvent()
+    {
+        return  $this->hasMany('App\HistoryEvent');
+    }
+
+
 }
