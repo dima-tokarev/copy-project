@@ -12,19 +12,31 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+{{--    <script src="{{'js/libs/js/jquery-1.11.0.min.js'}}"></script>--}}
+    <script src="{{asset('js/dist/js/jquery.sliderPro.min.js')}}"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
     <script src="{{ asset('js/attr.js') }}" ></script>
+  {{--  <script src="{{ asset('js/prototype.js') }}" ></script>--}}
+{{--    <script src="{{ asset('js/scriptaculous.js') }}" ></script>--}}
+    <script src="{{ asset('js/lightbox-2.6.min.js') }}" ></script>
+
     <script src="https://cdn.tiny.cloud/1/8ya2njt9elp5ngn2o994v0hi4hw4d8ffxyjl43x6imvd68ma/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
     <script src="{{ asset('js/comment-reply.js') }}"></script>
     <script src="{{ asset('js/myscripts.js') }}"></script>
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link rel="stylesheet" href="{{asset('js/dist/css/slider-pro.min.css')}}"/>
+    <link rel="stylesheet" href="{{asset('css/lightbox.css')}}"/>
 {{--    <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}">--}}
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+{{--    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">--}}
+
+{{--    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">--}}
     <link href="{{ asset('css/style-minifield.css') }}" rel="stylesheet">
 
 </head>
@@ -109,12 +121,16 @@
     @endif
     </div>
     <main class="py-4">
+
         @yield('content')
     </main>
 </div>
 <!-- START COPYRIGHT -->
 @yield('footer')
 <!-- END COPYRIGHT -->
+
+
+<script src="{{ asset('js/context_menu.js') }}"></script>
 </body>
 
 </html>

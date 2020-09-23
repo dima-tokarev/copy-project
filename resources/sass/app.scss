@@ -6,3 +6,45 @@
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
+
+
+
+.navbar-laravel {
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+
+  ul {
+    list-style-type: none;
+  }
+
+  .nav-item {
+    position: relative;
+  }
+}
+
+@media (min-width: 768px) {
+  .navbar-collapse .nav-item {
+    .navbar-collapse {
+      display: none !important;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      flex-direction: column;
+      width: 120px;
+      padding: 5px;
+      z-index: 10000;
+      background-color: #fff;
+      border: 1px solid rgba(0,0,0,.125);
+
+      .navbar-collapse {
+        top: 0;
+        left: 100%;
+      }
+    }
+
+    &:hover > .navbar-collapse {
+      display: flex !important;
+    }
+  }
+}
+

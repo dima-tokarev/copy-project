@@ -364,12 +364,12 @@
                             <div style="margin-left: 11px;" class="col-12">
                             <div id="file_content" class="form-group">
                                 <label for="exampleFormControlFile1">  <b>Добавить файл:</b></label>
-                                <div><input type="file" name="file_pre_work[]"  class="form-control-file" id="exampleFormControlFile1"></div>
+                                <div><input type="file" name="file_pre_work[]"  class="form-control-file" id="exampleFormControlFile1" multiple></div>
 
 
 
                             </div>
-                            <a id="add_file" href="javascript:void(0)">Еще...</a>
+                         {{--   <a id="add_file" href="javascript:void(0)">Еще...</a>--}}
                             <script>
                                 $(document).ready(function () {
                                     $('#add_file').on("click",function () {

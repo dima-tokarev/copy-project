@@ -100,7 +100,7 @@
                                     $('#select-attr-{{$attribute->attr_id}}').html("<option id='val_{{$attribute->attr_id}}_{{$attribute->attr_id}}' class='form-control' type='text' value='"+id+"'></option> " )
 
                                     if(y_e) {
-                                        $('#int_6').val(y_e);
+                                        $('#val_6_6').val(y_e);
                                     }
                                     $('#val_{{$attribute->attr_id}}_{{$attribute->attr_id}}').text(name);
                                 });
@@ -390,7 +390,7 @@
                 <div class="col"><b>Прикрепленные файлы:</b><br>
                     @isset($attachments)
                         @foreach($attachments as $attachment)
-                            <a class="fa fa-cloud-upload" href="{{asset('/storage/'.$attachment->attachment->path)}}" target="_blank"> {{$attachment->attachment->filename}} </a> <span style="font-size: 10px">размер:{{$attachment->attachment->size}}кб / дата:{{date("d-m-Y", strtotime($attachment->created_at))}}</span>
+                            <a class="fa fa-cloud-upload" href="{{asset('/storage/app/public/'.$attachment->attachment->path)}}" target="_blank"> {{$attachment->attachment->filename}} </a> <span style="font-size: 10px">размер:{{$attachment->attachment->size}}кб / дата:{{date("d-m-Y", strtotime($attachment->created_at))}}</span>
                             <br/>
                         @endforeach
                     @endisset
@@ -402,12 +402,12 @@
 
             <div id="file_content" class="form-group">
                 <label for="exampleFormControlFile1">  <b>Добавить файл:</b></label>
-                <div><input type="file" name="file_pre_work[]" class="form-control-file" id="exampleFormControlFile1"></div>
+                <div><input type="file" name="file_pre_work[]" class="form-control-file" id="exampleFormControlFile1" multiple></div>
 
 
 
             </div>
-           <a id="add_file" href="javascript:void(0)">Еще...</a>
+        {{--   <a id="add_file" href="javascript:void(0)">Еще...</a>--}}
             <script>
                $(document).ready(function () {
                    $('#add_file').on("click",function () {

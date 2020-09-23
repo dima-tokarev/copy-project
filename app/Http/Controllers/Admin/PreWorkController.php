@@ -783,7 +783,7 @@ class PreWorkController extends AdminController
                         $html_content .= '<td style="width: 10%">' . User::where('id', $item->author_id)->first()->name . '</td>';
                         $html_content .= '<th  style="width: 10%;text-align: right">';
 
-                        if(\Gate::allows('edit_attr_admin') || \Gate::allows('edit_attr_leader') ){
+                        if(\Gate::allows('edit_attr_admin') || \Gate::allows('edit_attr_leader') || $item->user_id == \Auth::user()->id ){
 
                             $html_content .='<div  style="margin-left: 0px" class="row">
                                                 <div >      <a class="fa fa-pencil-square-o" style="color: #2fa360" href="preworks/'.$item->id.'/edit"></a> /
@@ -791,7 +791,7 @@ class PreWorkController extends AdminController
                                                 </div>
                                                 <div >
                                                     <form id="delete-form" action="preworks-delete/'.$item->id.'" method="post">
-                                                        '.csrf_field().'<button id="delete-confirm" style="margin-top: -4px;color:indianred" class="btn btn-link fa fa-trash-o"></button>
+                                                        '.csrf_field().'<button id="delete-confirm" style="margin-top: -4px;color:indianred"  onclick="return confirm(\'Удалить работу?\')" class="btn btn-link fa fa-trash-o"></button>
                                                     </form>
                                                 </div>
                                         </div>';
@@ -851,7 +851,7 @@ class PreWorkController extends AdminController
                 $html_content .= '<td style="width: 10%"><a href="./preworks/'.$item->id.'">' . $item->name . '</a></td>';
                 $html_content .= '<td style="width: 10%">' . User::where('id', $item->author_id)->first()->name . '</td>';
                 $html_content .= '<th  style="width: 10%;text-align: right">';
-                if(\Gate::allows('edit_attr_admin') || \Gate::allows('edit_attr_leader') ){
+                if(\Gate::allows('edit_attr_admin') || \Gate::allows('edit_attr_leader') || $item->user_id == \Auth::user()->id){
 
                     $html_content .='<div  style="margin-left: 0px" class="row">
                                                 <div >      <a class="fa fa-pencil-square-o" style="color: #2fa360" href="preworks/'.$item->id.'/edit"></a> /
@@ -859,7 +859,7 @@ class PreWorkController extends AdminController
                                                 </div>
                                                 <div >
                                                     <form id="delete-form" action="preworks-delete/'.$item->id.'" method="post">
-                                                        '.csrf_field().'<button id="delete-confirm" style="margin-top: -4px;color:indianred" class="btn btn-link fa fa-trash-o"></button>
+                                                        '.csrf_field().'<button id="delete-confirm" style="margin-top: -4px;color:indianred" onclick="return confirm(\'Удалить работу?\')" class="btn btn-link fa fa-trash-o"></button>
                                                     </form>
                                                 </div>
                                         </div>';
@@ -945,62 +945,7 @@ class PreWorkController extends AdminController
 
 
 
-
-
         $pre_work = PreWork::find($id);
-
-         $attr = Custom_Type::where('object_id',$id)->get();
-         $attr2 = Float_Type::where('object_id',$id)->get();
-         $attr_string = DB::table('string_attribute_value')->where('object_id',$id)->get();
-
-        /*custom type*/
-         $sql = DB::table('custom_attribute_value');
-         $sql->join('attribute_definitions','attribute_definitions.id','=','custom_attribute_value.attr_id')
-                 ->where('custom_attribute_value.object_id','=',$id)
-                    ->join('object_types','object_types.id','=','attribute_definitions.attr_type');
-
-        $attr = $sql->get(array('attribute_definitions.attr_name as attr_name','custom_attribute_value.value as value_type','object_types.name as  attr_type','attribute_definitions.id as id_attr'));
-
-        $i = 0;
-        foreach ($attr as $custom){
-
-            $value = DB::table($custom->attr_type)->select('name')->where('id',$custom->value_type)->first();
-
-            if(isset($value->name)){
-                $attr[$i]->value_attr = $value->name;
-            }else{
-                $attr[$i]->value_attr = '';
-            }
-
-            $i++;
-        }
-        /*float type*/
-        $sql2 = DB::table('float_attribute_values');
-        $sql2->join('attribute_definitions','attribute_definitions.id','=','float_attribute_values.attr_id')
-          ->where('float_attribute_values.object_id','=',$id)
-          ->join('object_types','object_types.id','=','attribute_definitions.attr_type');
-
-        $attr2 = $sql2->get(array('attribute_definitions.attr_name as attr_name','float_attribute_values.value as value_type','object_types.name as  attr_type','attribute_definitions.id as id_attr'));
-
-
-        /*int type*/
-        $sql3 = DB::table('int_attribute_values');
-        $sql3->join('attribute_definitions','attribute_definitions.id','=','int_attribute_values.attr_id')
-            ->where('int_attribute_values.object_id','=',$id)
-            ->join('object_types','object_types.id','=','attribute_definitions.attr_type');
-
-        $attr3 = $sql3->get(array('attribute_definitions.attr_name as attr_name','int_attribute_values.value as value_type','object_types.name as  attr_type','attribute_definitions.id as id_attr'));
-
-
-        /*string type*/
-        $sql4 = DB::table('string_attribute_value');
-        $sql4->join('attribute_definitions','attribute_definitions.id','=','string_attribute_value.attr_id')
-            ->where('string_attribute_value.object_id','=',$id)
-            ->join('object_types','object_types.id','=','attribute_definitions.attr_type');
-
-        $attr4 = $sql4->get(array('attribute_definitions.attr_name as attr_name','string_attribute_value.value as value_type','object_types.name as  attr_type','attribute_definitions.id as id_attr'));
-
-
 
 
 
@@ -1019,9 +964,6 @@ class PreWorkController extends AdminController
 
             'pre_works' => $pre_work,
             'attrs' => $attr_sort,
-            'string_attr' => $attr4,
-            'float_attr' => $attr2,
-            'int_attr' => $attr3,
             'history' => $history,
             'attachments' => $attachments,
             'reports' => '',
@@ -1051,8 +993,9 @@ class PreWorkController extends AdminController
         foreach ($attributes as $attribute){
           $obj = ObjectType::find($attribute->attr()->get()->first()->attr_type);
           $attr_def = $attribute->attr()->get()->first()->attr_name;
-
+            $pre = PreWork::find($id);
             if($obj->type == 'custom') {
+
 
               $query = DB::table('custom_attribute_value')->where('object_id', $id)->where('object_type_id', 1)->where('attr_id', $attribute->attr()->get()->first()->id)->get();
 
@@ -1067,7 +1010,7 @@ class PreWorkController extends AdminController
                 if($obj->name == 'status' && Gate::allows('edit_attr_leader') == true || Gate::allows('edit_attr_admin') == true  || Gate::allows('edit_attr_manager') == true ) {
                     $attr_sort[$obj->name][] = $query;
                 }else{
-                    if($obj->name != 'status' && Gate::allows('edit_attr_admin') == true  || Gate::allows('edit_attr_manager') == true){
+                    if(Gate::allows('edit_attr_admin') == true  || Gate::allows('edit_attr_manager') == true || Auth::user()->id == $pre->user_id || Auth::user()->id == $pre->author_id){
                         $attr_sort[$obj->name][] = $query;
                     }
                 }
@@ -1080,16 +1023,16 @@ class PreWorkController extends AdminController
                 $attr_sort[$obj->name][] = $query;
             }
             if($obj->type == 'int') {
+
                 $query = DB::table($obj->name)->where('object_id', $id)->where('object_type_id', 1)->where('attr_id', $attribute->attr()->get()->first()->id)->get();
                 $query[0]->attr_name = $attr_def;
-
                 $query[0]->object_type = $obj->type;
 
 
                 if($query[0]->attr_id == 6 && Gate::allows('edit_attr_leader') == true || Gate::allows('edit_attr_admin') == true  || Gate::allows('edit_attr_manager') == true ) {
                     $attr_sort[$obj->name][] = $query;
                 }else{
-                    if(Gate::allows('edit_attr_admin') == true  || Gate::allows('edit_attr_manager') == true){
+                    if(Gate::allows('edit_attr_admin') == true  || Gate::allows('edit_attr_manager') == true || Auth::user()->id == $pre->user_id || Auth::user()->id == $pre->author_id){
                         $attr_sort[$obj->name][] = $query;
                     }
                 }
@@ -1120,14 +1063,6 @@ class PreWorkController extends AdminController
 
         $users = User::all();
 
-
-/*
-        if(Gate::allows('edit_attr_leader') || Gate::allows('edit_attr_leader') && $pre_work->user_id === \Auth::user()->id)
-        {
-
-
-
-        }*/
 
             $this->content = view('admin.prework_edit')->with([
 

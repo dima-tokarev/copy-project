@@ -101,6 +101,9 @@ class PreWorkRepository extends Repository
 
         if($request->file('file_pre_work')) {
 
+
+
+
             foreach ($data['file_pre_work'] as $file) {
                 $size = $file->getSize();
                 $img_name = $file->getClientOriginalName();
@@ -307,18 +310,18 @@ class PreWorkRepository extends Repository
 
 
 
+
+
+
+
             $q = Custom_Type::where('attr_id',5)->where('object_id',$data['pre_work_id'])->first();
-
-
-                    $sql = Custom_Type::where('attr_id', 5)->where('object_id', $data['pre_work_id'])->update([
-                        'value' => 3
-
-                    ]);
-
 
                         $name_attr = 'Статус';
                         $old_attr = DB::table('status')->where('id', $q->value)->first();
 
+            $sql = Custom_Type::where('attr_id', 5)->where('object_id', $data['pre_work_id'])->update([
+                'value' => 3
+            ]);
                         if ($old_attr == null) {
                             $old_attr = '';
                         } else {
@@ -408,15 +411,15 @@ class PreWorkRepository extends Repository
                $q = Custom_Type::where('attr_id',$key)->where('object_id',$data['pre_work_id'])->first();
 
                if($q->value != $attr) {
-                   $sql = Custom_Type::where('attr_id', $key)->where('object_id', $data['pre_work_id'])->update([
-                       'value' => $attr
-
-                   ]);
 
 
 
 
                    if ($key == 4 ) {
+                       $sql = Custom_Type::where('attr_id', $key)->where('object_id', $data['pre_work_id'])->update([
+                           'value' => $attr
+
+                       ]);
 
 
                           $name_attr = 'источник';
@@ -457,6 +460,13 @@ class PreWorkRepository extends Repository
 
                    }
                    if ($key == 2) {
+
+                       $sql = Custom_Type::where('attr_id', $key)->where('object_id', $data['pre_work_id'])->update([
+                           'value' => $attr
+
+                       ]);
+
+
                        $name_attr = 'клиент';
                        $old_attr = DB::table('client')->where('id', $q->value)->first();
                        $attr2 = DB::table('client')->where('id', $attr)->first();
@@ -491,6 +501,13 @@ class PreWorkRepository extends Repository
                        }
                    }
                    if ($key == 3) {
+
+                       $sql = Custom_Type::where('attr_id', $key)->where('object_id', $data['pre_work_id'])->update([
+                           'value' => $attr
+
+                       ]);
+
+
                        $name_attr = 'Вид работ';
                        $old_attr = DB::table('prework_type')->where('id', $q->value)->first();
                        $attr2 = DB::table('prework_type')->where('id', $attr)->first();
@@ -530,9 +547,14 @@ class PreWorkRepository extends Repository
 
                    if ($key == 5 && !isset($data['agreement'])) {
 
+                       $sql = Custom_Type::where('attr_id', $key)->where('object_id', $data['pre_work_id'])->update([
+                           'value' => $attr
+
+                       ]);
 
 
-                            $name_attr = 'статус';
+
+                       $name_attr = 'статус';
 
                             $old_attr = DB::table('status')->where('id', $q->value)->first();
                             $attr2 = DB::table('status')->where('id', $attr)->first();
@@ -855,23 +877,19 @@ class PreWorkRepository extends Repository
 
 
 
-                 $emails = [];
+                  $pre =  PreWork::find($data['pre_work_id']);
 
-                  $users = User::all();
+                  $users = User::find($pre->author_id);
 
+               if($users->id != Auth::user()->id) {
 
-                  foreach ($users as $user){
-                      $emails[] = $user->email;
-                  }
+                    Mail::send('admin.mail_comment', ['author' => Auth::user()->name, 'id' => $data['pre_work_id'], 'pre_work' => $pre], function ($message) use ($users) {
 
+                        $message->from('reamonn2008@mail.ru', 'Сервис-портал');
+                        $message->to($users->email)->subject('Добавление комментария к работе');
 
-                  Mail::send('admin.mail_comment', ['author' => Auth::user()->name, 'id' => $data['pre_work_id'],'pre_work' => PreWork::find($data['pre_work_id'])], function ($message) use ($emails) {
-
-                      $message->from('reamonn2008@mail.ru', 'Сервис-портал');
-                      $message->to($emails)->subject('Добавление комментария к работе');
-
-                  });
-
+                    });
+                }
 
 
           }

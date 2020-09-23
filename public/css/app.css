@@ -11346,5 +11346,121 @@ a.meanmenu-reveal {
  /* background: url(http://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/br_down.png) no-repeat right #ddd;*/
 }
 
+.add_catalog:hover{
+  cursor: pointer;
+}
+.add_series:hover{
+  cursor: pointer;
+}
+.add_product:hover{
+  cursor: pointer;
+}
+
+
+
+/* Товары */
+
+
+
+
+<!--CSS-->/*text family*/
+    div{
+      font-family:open sans;
+    }
+.block{
+  border:1px solid #ccc;
+  border-radius: 5px;
+  font-size:17px;
+}
+/* hover on blocks*/
+.block:hover{
+  background-color:#337ab7;
+  color:white;
+}
+img:hover{
+  border:1px solid white;
+}
+/*background color*/
+.block2{
+  background-color:#e35348;
+}
+/*texy size and color*/
+h4{
+  color:white;
+}
+
+.img-fluid{
+/*  height: 285px;*/
+}
+.img-catalog{
+  height: 250px;
+  position: relative;
+}
+
+.img-catalog img {
+  position: absolute;
+  height: 70%;
+  width: 80%;
+  margin: auto;
+  left: 10%;
+  top: 0;
+  bottom: 0;
+}
+
+/* карусель продукт */
+
+
+
+/* Main carousel style */
+.carousel {
+  width: 450px;
+
+}
+
+/* Indicators list style */
+.article-slide .carousel-indicators {
+  bottom: -84px;
+  left: 0;
+  margin-left: 5px;
+  width: 100%;
+}
+/* Indicators list style */
+.article-slide .carousel-indicators li {
+  border: medium none;
+  border-radius: 0;
+  float: left;
+  height: 54px;
+  margin-bottom: 5px;
+  margin-left: 0;
+  margin-right: 5px !important;
+  margin-top: 0;
+  width: 100px;
+}
+/* Indicators images style */
+.article-slide .carousel-indicators img {
+  border: 2px solid #FFFFFF;
+  float: left;
+  height: 54px;
+  left: 0;
+  width: 100px;
+}
+/* Indicators active image style */
+.article-slide .carousel-indicators .active img {
+  border: 2px solid #428BCA;
+  opacity: 0.7;
+}
+
+
+/* menu catalog */
+
+
+.show > .nav-item {
+
+ width: 180px;
+
+}
+
+/* карусель товара */
+
 
 

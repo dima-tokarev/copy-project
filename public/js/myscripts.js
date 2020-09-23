@@ -1,3 +1,7 @@
+/* Контекстное меню */
+
+
+
 jQuery(document).ready(function($) {
 	
 	$('.commentlist li').each(function(i) {
@@ -106,4 +110,10 @@ jQuery(document).ready(function($) {
 */
 
 
+// Stop carousel
+	$('.carousel').carousel({
+		interval: false
+	});
+
 });
+

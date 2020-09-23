@@ -103,7 +103,7 @@
             <div style="" class="col-4">&nbsp;</div>
             <div style="" class="col-4">
 
-                @canany(['edit_attr_admin','edit_attr_manager'])
+                @canany(['edit_attr_admin','edit_attr_manager','edit_attr_leader'])
                 <p style="float: right"><a class="btn btn-info" href="{{route('preworks.create')}}">Добавить работу</a></p>
                 @endcanany
             </div>
@@ -191,7 +191,7 @@
                 <td style="width: 10%">{{$pre_work->author->name}}</td>
                 <td style="width: 10%;text-align: right;">
 
-                    @canany(['edit_attr_admin', 'edit_attr_leader'])
+                    @if(Gate::allows('edit_attr_admin') || Gate::allows('edit_attr_leader') || $pre_work->user_id == \Auth::user()->id)
                         <div style="margin-left: 0px" class="row">
                             <div style="width: 25px;" class="cols-1">
                                 <a class="fa fa-pencil-square-o" style="color: #2fa360" href="{{route('preworks.edit',$pre_work->id)}}"></a> /
@@ -200,11 +200,11 @@
                             <div style="width: 25px;" class="cols-1">
                                 <form id="delete-form" action="{{route('preworks.delete',$pre_work->id)}}" method="post">
                                     @csrf
-                                    <button id="delete-confirm" data-id="{{$pre_work->id}}" style="margin-top: -4px;color:indianred"  class="btn btn-link fa fa-trash-o"></button>
+                                    <button id="delete-confirm" data-id="{{$pre_work->id}}" onclick="return confirm('Удалить работу?')" style="margin-top: -4px;color:indianred"  class="btn btn-link fa fa-trash-o"></button>
                                 </form>
                             </div>
                         </div>
-                    @endcanany
+                    @endif
                 </td>
 
             </tr>

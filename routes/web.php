@@ -37,6 +37,73 @@ Route::group(['prefix' => 'admin','middleware' => ['auth','revalidate']],functio
     });
 
 
+    /* Каталог фронт */
+    Route::get('/catalog','Admin\CatalogController@index')->name('catalog_index');
+    /* Каталог админ */
+    Route::get('/catalog-menu','Admin\CatalogMenuController@index')->name('catalog_menu');
+
+    /*add cat*/
+    Route::post('/catalog-add-cat','Admin\CatalogMenuController@addCat')->name('add_cat');
+    Route::post('/catalog-store-cat','Admin\CatalogMenuController@storeCat')->name('store_cat');
+
+
+    /*add series*/
+    Route::post('/catalog-add-series','Admin\CatalogMenuController@addSeries')->name('add_series');
+    Route::post('/catalog-store-series','Admin\CatalogMenuController@storeSeries')->name('store_series');
+
+    /*add product*/
+    Route::get('/catalog-add-product/{id}','Admin\CatalogMenuController@addProduct')->name('add_product');
+    Route::post('/catalog-store-product','Admin\CatalogMenuController@storeProduct')->name('store_product');
+    Route::get('/product/{id}','Admin\ProductController@showProduct')->name('show_product');
+
+    /*select cat product*/
+    Route::post('/catalog-select-product','Admin\CatalogMenuController@selectProduct')->name('select_product');
+    /* edit product*/
+    Route::get('/edit-product/{id}','Admin\ProductController@editProduct')->name('edit_product');
+    Route::post('/update-product','Admin\ProductController@updateProduct')->name('upd_product');
+
+    /* user select cat product*/
+    Route::post('/catalog-user-select-product','Admin\CatalogMenuController@userSelectProduct')->name('user_select_product');
+
+    /*index matching*/
+    Route::post('/matching-product','Admin\MatchingController@index')->name('matching_product');
+    /*save matching*/
+
+    Route::post('/matching-save','Admin\MatchingController@store')->name('matching_store');
+    /*select cat matching*/
+    Route::post('/matching-catalog-1c','Admin\MatchingController@selectCat1c')->name('select_cat_1c');
+
+    /*delete product*/
+    Route::post('/catalog-delete-product','Admin\CatalogMenuController@deleteProduct')->name('del_product');
+
+    /* block attributes */
+    Route::get('/block-attr','Admin\BlockAttributeController@index')->name('block_attribute');
+    Route::get('/block-attr/{id}','Admin\BlockAttributeController@show')->name('block_attribute_show');
+    Route::get('/block-add','Admin\BlockAttributeController@add')->name('add_block');
+    Route::post('/block-store','Admin\BlockAttributeController@store')->name('store_block');
+    /* end block attributes */
+
+    /* attributes */
+
+    Route::get('/add-attribute/{id}','Admin\AttributeController@add')->name('add_attribute');
+    Route::post('/store-attribute/','Admin\AttributeController@store')->name('store_attribute');
+    Route::post('/delete-attribute/','Admin\AttributeController@delete')->name('del_attribute');
+
+    /* end attributes */
+
+    /* cat */
+
+    Route::get('/catalog-block','Admin\CatBlockController@index')->name('cat_all');
+    Route::get('/catalog-block-show/{id}','Admin\CatBlockController@show')->name('cat_block_show');
+    Route::post('/catalog-block-store','Admin\CatBlockController@store')->name('store_cat_block');
+
+    Route::post('/catalog-delete-cat','Admin\CatalogMenuController@deleteCat')->name('del_cat');
+
+    /*delete series*/
+
+    Route::post('/catalog-delete-series','Admin\CatalogMenuController@deleteSeries')->name('del_series');
+
+
     Route::get('/',['uses' => 'Admin\IndexController@index','as' => 'adminIndex']);
     /* пользователи*/
     Route::resource('/users','Admin\UsersController');

@@ -43,7 +43,7 @@
                         </li>
                         <li><a  style="color: gray" href="javascript:void(0);">Пункт 1</a></li>
                         <li><a style="color:gray" href="javascript:void(0);">Пункт 2</a></li>
-                        @canany(['edit_attr_admin'])
+                        @canany(['edit_attr_admin','edit_attr_leader','edit_attr_manager'])
                             <li>
                                 <a style="color: gray;" href="#">Администрирование</a>
                                 <ul class="sub-menu">
@@ -55,14 +55,25 @@
 
                                         </ul>
                                     </li>
+                                    @canany(['edit_attr_admin'])
                                     <li>
                                         <a href="#">Управление</a>
                                         <ul class="sub-menu">
                                             <li><a href="{{route('users.index')}}">Пользователи</a></li>
-                                            <li></li>
+                                           <li></li>
                                         </ul>
                                     </li>
-
+                                    @endcanany
+                            {{--        @canany(['edit_attr_admin'])--}}
+                                        <li>
+                                            <a href="#">Каталог</a>
+                                            <ul class="sub-menu">
+                                                <li><a href="{{route('catalog_menu')}}">Меню</a></li>
+                                                <li><a href="{{route('block_attribute')}}">Атрибуты</a></li>
+                                                <li><a href="{{route('cat_all')}}">Категории-блоки</a></li>
+                                            </ul>
+                                        </li>
+                             {{--       @endcanany--}}
                                 </ul>
                             </li>
                            @endcanany
