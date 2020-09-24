@@ -105,32 +105,52 @@
     <div id="content_catalog" style="border: 1px solid #ccc;border-radius: 10px" class="col-8">
         <br>
             @if(isset($products))
-            <table class="table">
-               <thead >
-        {{--       <th style="border-bottom: none">Название</th>
-               <td align="right"></td>--}}
-               </thead>
-                <tbody >
-                    @foreach($products as $product)
+            <div class="container-fluid">   <div class="row">
+                    <div  class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="row">
 
-                       <tr>
-                        <td><a href="{{route('show_product',$product->id)}}">{{$product->name}}</a></td>
-                           <td align="right">
-                               <form action="/admin/catalog-delete-product" method="post" style="display:  inline-flex">
-                                   <input type="hidden" name="del_product" value="{{ $product->id }}">
-                                   <button  onclick="return confirm('Удалить продукт?')" class="btn btn-info" aria-hidden="true">Удалить</button>
-                                   @csrf
-                               </form>
-                           </td>
-                       </tr>
-                    @endforeach
+                            @foreach ($products as $product)
+                            @if(isset($product->productImg->first()->path))
+                             @php $img = $product->productImg->first()->path; @endphp
+                            @else
+                             @php $img = '123.jpg'; @endphp
+                            @endif
 
-                </tbody>
-            </table>
-            {{ $products->links() }}
-            @endif
 
+                            <!--1rd card-->
+                            <div style="padding-top: 24px;" class="col=lg-4 col-md-4 order-md-3">
+                                <div class="container block rounded-lg rounded-sm">
+                                    <!--1st row--->
+                                    <div class="row">
+
+                                        <div class="col-lg-12 col-md-12 col-sm-12 img-catalog">
+                                            <a href="/{{$product->id}}"><img  src="{{asset('/storage/app/public/'.$img)}}" alt="placeholder image"/></a>
+
+                                        </div>
+                                    </div>
+                                    <!--2nd row--->
+                                    <div class="row" >
+                                        <div class="col-lg-12 col-md-12 col-sm-12 block2">
+                                            <p><h6 style="color: #fff" class="mb-3">{{$product->name}}</h6></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+            @endforeach
+
+
+
+
+                        </div>
+                    </div>
+                    <div style="margin: 20px">
+                         {{ $products->links() }}
+                    </div>
+                    @endif
+            </div>
         </div>
-
+        </div>
     </div>
-    </div>
+</div>

@@ -15,9 +15,17 @@
                 <div class="col-8">
                     <h4 style="color: black">{{$product->name}}</h4>
                 </div>
-                <div class="col-4">
+                <div class="col-2">
                     <a style="margin-left: -15px;" class="fa fa-pencil-square-o" aria-hidden="true" href="{{route('edit_product',$product->id)}}" >Редактировать</a>
                 </div>
+                <div class="col-2">
+                    <form action="/admin/catalog-delete-product" method="post" style="display:  inline-flex">
+                        <input type="hidden" name="del_product" value="{{ $product->id }}">
+                        <button style="margin-top: -9px;margin-left: -20px;"  onclick="return confirm('Удалить продукт?')" class="btn btn-link" aria-hidden="true">Удалить</button>
+                        @csrf
+                    </form>
+                </div>
+
 
             </div>
 
