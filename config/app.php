@@ -177,6 +177,8 @@ return [
         App\Providers\ComposerServiceProvider::class,
         App\Providers\ComposerInnerServiceProvider::class,
         App\Providers\Composer1cServiceProvider::class,
+        App\Providers\ComposerCatBlockServiceProvider::class,
+
 
     ],
 

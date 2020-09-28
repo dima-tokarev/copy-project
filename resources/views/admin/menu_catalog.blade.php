@@ -6,7 +6,7 @@
             foreach ($items as $item) {
                 if (isset($item->children)) {
     @endphp
-    <li style="padding: 10px;" class="nav-item">
+    <li style="padding: 5px;" class="nav-item">
         <a class="user_select_cat_product" data-id-cat="{{ $item->id }}" href="{{ $item->url }}"
            class="nav-link"
            id="hasSub-{{ $item->id }}"

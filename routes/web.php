@@ -87,6 +87,11 @@ Route::group(['prefix' => 'admin','middleware' => ['auth','revalidate']],functio
 
     Route::get('/add-attribute/{id}','Admin\AttributeController@add')->name('add_attribute');
     Route::post('/store-attribute/','Admin\AttributeController@store')->name('store_attribute');
+    Route::get('/edit-attribute/{id}','Admin\AttributeController@edit')->name('edit_attribute');
+    Route::post('/update-attribute/','Admin\AttributeController@update')->name('update_attribute');
+
+
+
     Route::post('/delete-attribute/','Admin\AttributeController@delete')->name('del_attribute');
 
     /* end attributes */

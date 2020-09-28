@@ -80,6 +80,65 @@ class AttributeController extends AdminController
     }
 
 
+
+    public function edit($id)
+    {
+
+
+        $type_opt = ProductTypeOption::find($id);
+        $options = $type_opt->optionType;
+
+
+        $cat = $type_opt->catType;
+
+
+
+        $this->content = view('admin.attribute_edit')->with(['cat' => $cat,'type_opt' => $type_opt ,'options' => $options])->render();
+
+        return $this->renderOutput();
+
+
+    }
+
+
+    public function update(Request $request)
+    {
+
+        $data = $request->all();
+
+
+
+        $product_type = ProductTypeOption::where('id',$data['attr_id'])->update(['name' => $data['name']]);
+
+        if(isset($data['option_list'])) {
+            foreach ($data['option_list'] as $index => $val) {
+
+
+                if(ProductOption::find($index)) {
+
+                        ProductOption::where('id', $index)->update(['value_option' => $val]);
+                    }else{
+                        ProductOption::create(['value_option' => $val,'product_type_option_id' => $data['attr_id']]);
+                    }
+                }
+
+            if (isset($data['del_list']) && count($data['del_list']) > 0) {
+
+                foreach ($data['del_list'] as $index => $val) {
+
+                    ProductOption::where('id', $index)->delete();
+                }
+            }
+        }
+
+
+        return redirect()->route('edit_attribute',$data['attr_id'])->with('success','Атрибут обновлен');
+
+
+    }
+
+
+
     public function delete(Request $request)
     {
         $data = $request->all();

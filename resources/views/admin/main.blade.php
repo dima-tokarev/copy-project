@@ -16,7 +16,7 @@
                     <div  class="col-lg-12 col- md-12 col-sm-12">
                         <div id="content_catalog" class="row">
 
-
+<h5 align="center" style="padding: 20px;">Выберите категорию</h5>
 
 
                         </div>

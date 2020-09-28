@@ -3,7 +3,7 @@
     <br/>
 
     <div class="row">
-        <div  class="col-11">
+        <div  class="col-12">
             @if($message = Session::get('success'))
                 <div class="alert alert-success">
                     <p> {{ $message }} </p>
@@ -36,7 +36,7 @@
                                     <span>Поле загрузки файла</span>
                                 @endif
                             </td>
-                            <td align="center"><a href="#">Редактировать</a></td>
+                            <td align="center"><a href="{{route('edit_attribute',$item->id)}}">Редактировать</a></td>
                             <td align="center"><form action="{{route('del_attribute')}}" method="post">
                                     <input type="hidden" name="cat_attr_id" value="{{$block_name->id}}">
                                     <input type="hidden" name="attr_name" value="{{$item->name}}">

@@ -33,7 +33,7 @@
                           <td>Название категории</td>
                         <td><form action="#" method="post">
                                 <input hidden="type" name="bock_id" value="{{$item->id}}">
-                                <button onclick="return confirm('Удалить блок?')" aria-hidden="true" class="btn btn-danger">Удалить</button>
+                                <button {{--onclick="return confirm('Удалить блок?')" --}}aria-hidden="true" class="btn btn-danger" disabled>Удалить</button>
                             </form>
                         </td>
                       </tr>

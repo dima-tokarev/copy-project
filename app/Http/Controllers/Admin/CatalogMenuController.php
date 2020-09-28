@@ -111,7 +111,7 @@ class CatalogMenuController extends AdminController
             }
             $html .= '</div></div></div></div>';
         }else{
-            $html .= '<div align="center"><h5>Товары не найдены</h5></div>';
+            $html .= '<div align="center"><h5 style="padding: 20px;">Товары не найдены</h5></div>';
         }
             echo $html;
 

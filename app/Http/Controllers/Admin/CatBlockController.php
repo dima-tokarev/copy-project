@@ -16,7 +16,7 @@ class CatBlockController extends AdminController
         parent::__construct();
 
 
-        $this->template = 'admin.catalog_menu';
+        $this->template = 'admin.catalog';
     }
 
     public function index()

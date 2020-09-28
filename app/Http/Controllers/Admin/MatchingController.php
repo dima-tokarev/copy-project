@@ -43,7 +43,8 @@ class MatchingController extends AdminController
    public function selectCat1c(Request $request)
    {
        $data = $request->all();
-       $products = Product1c::where('series_id', $data['cat_1c_product_id'])->get();
+
+       $products = Product1c::where('catalog_1c', $data['cat_1c_product_id'])->get();
 
        $html = '';
        if(count($products) > 0) {
@@ -71,7 +72,7 @@ class MatchingController extends AdminController
            }
            $html .='</tbody>';
        }else{
-          $html .= '<h5 align="center">Товары не найдены</h5>';
+          $html .= '<h5 style="padding: 20px" align="center">Товары не найдены</h5>';
        }
        echo $html;
 

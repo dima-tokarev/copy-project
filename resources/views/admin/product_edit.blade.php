@@ -83,22 +83,25 @@
                                     </tr>
                                     @foreach($val->typeOption as $item)
                                         <tr>
-                                            <td style="width: 50%">{{$item->name}}</td>
+                                            <td style="width: 50%">{{$item->name}}   </td>
                                             <td style="width: 50%">
                                                 @if(count($item->optionType) > 0)
                                                     <select name="select_option[{{$val->id}}][{{$item->name}}]" class="form-control">
                                                         @if(isset(\App\ProductSelectOption::where('type_option_value',$item->name)->where('product_id',$product_id)->first()->value_option))
                                                         <option selected>{{\App\ProductSelectOption::where('type_option_value',$item->name)->where('product_id',$product_id)->first()->value_option}}</option>
-                                                        @else
-                                                            <option selected>Выбрать значение</option>
-                                                        @endif
                                                             @foreach($item->optionType as $opt)
-                                                            @isset(\App\ProductSelectOption::where('type_option_value',$item->name)->where('product_id',$product_id)->first()->value_option)
-                                                             @if(\App\ProductSelectOption::where('type_option_value',$item->name)->where('product_id',$product_id)->first()->value_option != $opt->value_option)
+                                                               @if(\App\ProductSelectOption::where('type_option_value',$item->name)->where('product_id',$product_id)->first()->value_option != $opt->value_option)
+                                                                <option value="{{$opt->value_option}}">{{$opt->value_option}}</option>
+                                                               @endif
+                                                            @endforeach
+                                                        @else
+
+                                                            @foreach($item->optionType as $opt)
+                                                                <option selected>Выбрать значение</option>
                                                             <option value="{{$opt->value_option}}">{{$opt->value_option}}</option>
-                                                            @endisset
-                                                           @endif
+
                                                         @endforeach
+                                                        @endif
                                                     </select>
                                                 @else
                                                     @if(isset(\App\ProductSelectOption::where('type_option_value',$item->name)->where('product_id',$product_id)->first()->value_option))

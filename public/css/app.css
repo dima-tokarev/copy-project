@@ -11374,15 +11374,15 @@ a.meanmenu-reveal {
 }
 /* hover on blocks*/
 .block:hover{
-  background-color:#337ab7;
+  background-color:#f6f6f6;
   color:white;
 }
 img:hover{
-  border:1px solid white;
+/*  border:1px solid white;*/
 }
 /*background color*/
 .block2{
-  background-color:#e35348;
+  background-color: #5d8dbb;
 }
 /*texy size and color*/
 h4{
@@ -11452,7 +11452,11 @@ h4{
 
 
 /* menu catalog */
-
+#mainMenu{
+  overflow: auto; /* Добавляем полосы прокрутки */
+  /*width: 300px;*/ /* Ширина блока */
+  height: 500px; /* Высота блока */
+}
 
 .show > .nav-item {
 

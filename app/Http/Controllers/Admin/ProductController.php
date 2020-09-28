@@ -31,7 +31,7 @@ class ProductController extends AdminController
         $product = Product::find($id);
         $product_opt = ProductSelectOption::where('product_id',$id)->get();
         $product_img = ProductImg::where('product_id',$id)->get();
-        $product_opt = $product_opt->groupBy('product_cat_id');
+        $product_opt = $product_opt->sortBy('product_cat_id')->groupBy('product_cat_id');
 
 
 
@@ -80,18 +80,17 @@ class ProductController extends AdminController
         $product = Product::where('id',$data['product_id'])->update(['name' => $data['name']]);
 
 
-
+     if(isset($data['select_option'])) {
         foreach ($data['select_option'] as $index_cat => $item) {
 
-            foreach ($item as $index => $val){
+            foreach ($item as $index => $val) {
 
 
-                if(ProductSelectOption::where('product_id',$data['product_id'])->where('type_option_value',$index)->first())
-                {
-                    $upd = ProductSelectOption::where('product_id',$data['product_id'])->where('type_option_value',$index)->update([
+                if (ProductSelectOption::where('product_id', $data['product_id'])->where('type_option_value', $index)->first()) {
+                    $upd = ProductSelectOption::where('product_id', $data['product_id'])->where('type_option_value', $index)->update([
                         'value_option' => $val
                     ]);
-                }else{
+                } else {
                     ProductSelectOption::create([
                         'product_cat_id' => $index_cat,
                         'product_id' => $data['product_id'],
@@ -105,7 +104,7 @@ class ProductController extends AdminController
 
 
         }
-
+    }
 
         if($request->file('file_img')) {
 

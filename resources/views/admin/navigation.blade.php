@@ -68,7 +68,7 @@
                                         <li>
                                             <a href="#">Каталог</a>
                                             <ul class="sub-menu">
-                                                <li><a href="{{route('catalog_menu')}}">Меню</a></li>
+                                                <li><a href="{{route('catalog_index')}}">Каталог</a></li>
                                                 <li><a href="{{route('block_attribute')}}">Атрибуты</a></li>
                                                 <li><a href="{{route('cat_all')}}">Категории-блоки</a></li>
                                             </ul>

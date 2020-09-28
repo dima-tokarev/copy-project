@@ -5,7 +5,7 @@
                 <div style="border: none" class="modal-content">
 
                     <div  class="row">
-                        <div  class="col-7">     <h5 class="modal-title" id="exampleModalLongTitle"><b>Каталог</b></h5></div>
+                        <div  class="col-7">     <h5 class="modal-title" id="exampleModalLongTitle"><b>Меню</b></h5></div>
 
                         {{--    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>

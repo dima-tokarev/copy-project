@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="2290c284-a007-416e-9b39-619d39268c7f" name="portal" url="http://vetalb2020.beget.tech">
+        <fileTransfer host="vetalb2020.beget.tech" port="22" rootFolder="/home/v/vetalb2020/vetalb2020.beget.tech/public_html" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
