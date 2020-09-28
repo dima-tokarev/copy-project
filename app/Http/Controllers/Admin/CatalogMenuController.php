@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+
 use App\Product;
-use App\Product1c;
-use App\ProductCatOption;
+
+
 use App\ProductImg;
 use App\ProductSelectOption;
 use Illuminate\Http\Request;
-use DB;
 use App\Catalog;
 
 
@@ -51,11 +50,28 @@ class CatalogMenuController extends AdminController
 
     public function selectProduct(Request $request)
     {
+
+
         $data = $request->all();
 
         $products  = Product::where('series_id',$data['select_id'])->get();
 
-        $html = '';
+        $json_product = [];
+
+            foreach ($products as $product) {
+                $json_product[$product->id] = [
+                    'name' => $product->name,
+                    'img' => isset($product->productImg->first()->path) ? $product->productImg->first()->path : 'http://'.$_SERVER['SERVER_NAME'].'/storage/app/public/123.jpg',
+                    'link' => '/admin/product/'.$product->id
+                ];
+
+            }
+
+
+
+     return  json_encode($json_product);
+
+/*        $html = '';
         if($data['select_id']){
         if(count($products) > 0) {
 
@@ -71,13 +87,13 @@ class CatalogMenuController extends AdminController
                     $img = '123.jpg';
                 }
                 $html .= '
-             
+
                          <!--1rd card-->
                             <div style="padding-top: 24px;" class="col=lg-4 col-md-4 order-md-3">
                                 <div class="container block rounded-lg rounded-sm">
                                     <!--1st row--->
                                     <div class="row">
-                                                                            
+
                                         <div class="col-lg-12 col-md-12 col-sm-12 img-catalog">
                                            <a href="/admin/product/' . $product->id . '"><img  src="http://'.$_SERVER['SERVER_NAME'].'/storage/app/public/'.$img.'" alt="placeholder image"/></a>
 
@@ -91,12 +107,12 @@ class CatalogMenuController extends AdminController
                                     </div>
                                 </div>
                             </div>
-                            
-             
+
+
              ';
 
 
-                /*       $html .= '
+                      $html .= '
 
                                <td><a href="/admin/product/'.$product->id.'">'.$product->name.'</a></td>
                             <td align="right">
@@ -107,7 +123,7 @@ class CatalogMenuController extends AdminController
                                       </form>
                                   </td>
 
-                           ';*/
+                           ';*
             }
             $html .= '</div></div></div></div>';
         }else{
@@ -115,8 +131,7 @@ class CatalogMenuController extends AdminController
         }
             echo $html;
 
-
-        }
+        } end */
 
     }
 
