@@ -66,7 +66,7 @@
 
 
 
-
+                                <input type='hidden' name='view_id' value='{{$view_id}}'>
                                         <input type='hidden' name='series_id' value='{{$series_id}}'>
 
                                     @csrf

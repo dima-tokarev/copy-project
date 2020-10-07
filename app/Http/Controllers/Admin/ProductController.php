@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\CatBlock;
 use App\Http\Controllers\Controller;
 use App\Product;
 use App\ProductImg;
@@ -29,9 +30,19 @@ class ProductController extends AdminController
     {
 
         $product = Product::find($id);
-        $product_opt = ProductSelectOption::where('product_id',$id)->get();
+        $block = CatBlock::where('catalog_id',$product->series_id)->get();
+        $block_id = $block->sortBy('sort');
+        $product_opt = [];
+        foreach ($block_id as $val)
+        {
+
+            $product_opt[$val->product_cat_option_id] = ProductSelectOption::where('product_cat_id',$val->product_cat_option_id)->where('product_id',$id)->get();
+        }
+
+
+
         $product_img = ProductImg::where('product_id',$id)->get();
-        $product_opt = $product_opt->sortBy('product_cat_id')->groupBy('product_cat_id');
+
 
 
 
@@ -53,6 +64,7 @@ class ProductController extends AdminController
 
         $cat = $product->category->blocks;
 
+
         $product_opt = ProductSelectOption::where('product_id',$id)->get();
 
 
@@ -62,7 +74,7 @@ class ProductController extends AdminController
         $product_opt = $product_opt->groupBy('product_cat_id');
 
 
-        $this->content = view('admin.product_edit')->with(['product' => $product ,'product_opt' => $product_opt,'product_img' => $product_img,'series_id' => $id, 'cat' => $cat,'product_id' => $id])->render();
+        $this->content = view('admin.product_edit')->with(['product' => $product ,'product_opt' => $product_opt,'product_img' => $product_img,'series_id' => $id, 'cat' => $cat->sortBy('sort'),'product_id' => $id])->render();
 
         return $this->renderOutput();
 

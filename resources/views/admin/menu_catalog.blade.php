@@ -29,7 +29,7 @@
         } else {
     @endphp
     <li style="padding: 5px;" class="nav-item">
-        <a  class="user_select_cat_product" data-id-cat="{{ $item->id }}" href="javascript:void(0)" class="nav-link">{{ $item->name }}</a>
+        <a  class="user_select_cat_product" data-id-cat="{{ $item->id }}" view-id="{{$item->view_id}}" href="javascript:void(0)" class="nav-link">{{ $item->name }}</a>
     </li>
     @php
         }

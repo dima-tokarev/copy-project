@@ -21,6 +21,11 @@ class ProductCatOption extends Model
         return $this->belongsToMany('App\Catalog','cat_block');
     }
 
+    public function sortBlock()
+    {
+        return $this->hasMany('App\CatBlock','product_cat_option_id');
+    }
+
 
 
 

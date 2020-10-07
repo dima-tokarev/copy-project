@@ -23,10 +23,14 @@
                     <th>
                         Назначить
                     </th>
+                    <th>
+                        Сортировка
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
                 @if(isset($blocks))
+
                     @foreach($blocks as $block)
                         <tr>
                             <td>
@@ -35,12 +39,18 @@
                             <th>
 
                                 @if($block->id == $catalog->blocks->contains('id',$block->id))
-                                <input checked type="checkbox" name="{{$catalog->id}}[]" value="{{$block->id}}">
+                                <input checked type="checkbox" name="{{$catalog->id}}[{{$block->id}}]" value="{{$block->id}}">
                                 @else
-                                    <input  type="checkbox" name="{{$catalog->id}}[]" value="{{$block->id}}">
+                                    <input  type="checkbox" name="{{$catalog->id}}[{{$block->id}}]" value="{{$block->id}}">
                                 @endif
 
                             </th>
+
+                           @if(\App\CatBlock::where('product_cat_option_id',$block->id)->where('catalog_id',$catalog->id)->first())
+                            <th style="width: 10%"><input class="form-control" type="number" name="sort[{{$block->id}}]" value="{{\App\CatBlock::where('product_cat_option_id',$block->id)->where('catalog_id',$catalog->id)->first()->sort}}"></th>
+                           @else
+                                <th style="width: 10%"><input class="form-control" type="number" name="sort[{{$block->id}}]" value=""></th>
+                            @endif
                         </tr>
                     @endforeach
                 @endif

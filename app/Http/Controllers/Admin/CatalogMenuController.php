@@ -10,6 +10,7 @@ use App\ProductImg;
 use App\ProductSelectOption;
 use Illuminate\Http\Request;
 use App\Catalog;
+use DB;
 
 
 
@@ -24,7 +25,7 @@ class CatalogMenuController extends AdminController
 
 
 
-        $this->template = 'admin.catalog_menu';
+        $this->template = 'admin.catalog';
     }
 
 
@@ -33,13 +34,15 @@ class CatalogMenuController extends AdminController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($id)
     {
+
+
         //
         $catalog = Catalog::all();
-        $products = Product::paginate(25);
-
-        $this->content = view('admin.catalog_menu_main')->with(['catalogs' => $catalog,'products' => $products])->render();
+        $products = Product::where('view_id',$id)->paginate(25);
+        $views = DB::table('view')->get();
+        $this->content = view('admin.catalog_menu_main')->with(['catalogs' => $catalog,'products' => $products,'views' => $views ,'view_id' => $id])->render();
 
         return $this->renderOutput();
 
@@ -54,9 +57,9 @@ class CatalogMenuController extends AdminController
 
         $data = $request->all();
 
-        $products  = Product::where('series_id',$data['select_id'])->get();
+        $products  = Product::where('series_id',$data['select_id'])->where('view_id',$data['view_id'])->get();
 
-        $json_product = [];
+/*        $json_product = [];
 
             foreach ($products as $product) {
                 $json_product[$product->id] = [
@@ -69,9 +72,9 @@ class CatalogMenuController extends AdminController
 
 
 
-     return  json_encode($json_product);
+     return  json_encode($json_product);*/
 
-/*        $html = '';
+        $html = '';
         if($data['select_id']){
         if(count($products) > 0) {
 
@@ -111,7 +114,7 @@ class CatalogMenuController extends AdminController
 
              ';
 
-
+/*
                       $html .= '
 
                                <td><a href="/admin/product/'.$product->id.'">'.$product->name.'</a></td>
@@ -123,7 +126,7 @@ class CatalogMenuController extends AdminController
                                       </form>
                                   </td>
 
-                           ';*
+                           ';*/
             }
             $html .= '</div></div></div></div>';
         }else{
@@ -131,7 +134,7 @@ class CatalogMenuController extends AdminController
         }
             echo $html;
 
-        } end */
+        }
 
     }
 
@@ -180,22 +183,35 @@ class CatalogMenuController extends AdminController
               <div class='container'>
 
               <br/><h5>Добавить категорию</h5><br/>
-                 <form action='/admin/catalog-store-cat' method='post'>
+              
                 <div class='row'>
 
                     <div class='col-7'>
                             <input class='form-control' type='text' name='name_cat' placeholder='введите название категории' required>
                     </div>
+                    
                       <div class='col-3'>
-                          <input type='hidden' name='cat_id' value='".$data['add_cat']."' placeholder='введите название категории'>
-                         <button class='btn btn-info'>Добавить</button>
+                         <form  action='/admin/".$data['add_view_id']."/catalog-store-cat/' method='post'>
+                          <input type='hidden' name='cat_id' value='".$data['add_cat']."'>
+                             <input type='hidden' name='view_id' value='".$data['add_view_id']."'>
+                                   ".csrf_field()."
+                         <button type='submit' class='btn btn-info'>Добавить</button>
+                                
+               </form>
                     </div>
-                      ".csrf_field()."
+                   
                 </div>
+<<<<<<< HEAD
 
 
                </form>
               </div>
+=======
+         
+                
+              
+              </div>  
+>>>>>>> 3d9391b20c20d20076df558e8ce3a7470262c232
             ";
 
 
@@ -211,22 +227,52 @@ class CatalogMenuController extends AdminController
         $data = $request->all();
 
 
+        if(isset($data['main_cat'])){
             Catalog::create([
 
-                'name' => $data['name_cat'],
-                'parent_id' => $data['cat_id'],
+                'name' => $data['name'],
+                'parent_id' => null,
                 'url' => '#',
                 'sort_order' => 0,
                 'live' => 1,
+<<<<<<< HEAD
                 'type' => 'cat',
+=======
+                'type' => $data['type'],
+                'hasСontent' => 0,
                 'view_id' => $data['view_id']
             ]);
 
+
+        }else{
+
+
+            Catalog::create([
+
+                'name' => $data['name_cat'],
+                'parent_id' => $data['parent_id'],
+                'url' => '#',
+                'sort_order' => 0,
+                'live' => 1,
+                'type' => $data['type'],
+                'hasСontent' => 0,
+>>>>>>> 3d9391b20c20d20076df558e8ce3a7470262c232
+                'view_id' => $data['view_id']
+            ]);
+        }
+
+
+
+
+<<<<<<< HEAD
             // return redirect()->route('catalog_menu')->with('success','Категория добавлена');
             return $cat ? json_encode('Success') : json_encode('');
 
+=======
+>>>>>>> 3d9391b20c20d20076df558e8ce3a7470262c232
 
 
+            return redirect()->route('catalog_menu',$data['view_id'])->with('success','Категория добавлена');
 
 
 
@@ -242,8 +288,13 @@ class CatalogMenuController extends AdminController
 
         $cat = Catalog::where('id',$data['del_cat'])->delete();
 
+<<<<<<< HEAD
         return $cat ? json_encode('Success') : json_encode('');
 
+=======
+        return redirect()->route('catalog_menu',$data['view_id'])
+            ->with('success', 'Категория удалена!');
+>>>>>>> 3d9391b20c20d20076df558e8ce3a7470262c232
     }
 
 
@@ -266,7 +317,8 @@ class CatalogMenuController extends AdminController
                             <input class='form-control' type='text' name='name_cat' placeholder='введите название категории' required>
                     </div>
                       <div class='col-3'>
-                          <input type='hidden' name='cat_id' value='".$data['add_series']."' placeholder='введите название категории'>
+                          <input type='hidden' name='cat_id' value='".$data['add_series']."'>
+                              <input type='hidden' name='view_id' value='".$data['add_view_id']."'>
                          <button class='btn btn-info'>Добавить</button>
                     </div>
                       ".csrf_field()."
@@ -300,9 +352,20 @@ class CatalogMenuController extends AdminController
             'sort_order' => 0,
             'live' => 1,
             'type' => 'series',
+<<<<<<< HEAD
         ]);
 
         return $cat ? 'Success' : '';
+=======
+            'hasContent' => 0,
+            'view_id' => $data['view_id']
+
+
+
+        ]);
+
+        return redirect()->route('catalog_menu',$data['view_id'])->with('success','Серия добавлена');
+>>>>>>> 3d9391b20c20d20076df558e8ce3a7470262c232
 
 
     }
@@ -315,8 +378,14 @@ class CatalogMenuController extends AdminController
 
         $cat = Catalog::where('id',$data['del_cat'])->delete();
 
+<<<<<<< HEAD
         return $cat ? json_encode('Success') : json_encode('');
 
+=======
+        
+        return redirect()->route('catalog_menu',$data['view_id'])
+            ->with('success', 'Серия удалена!');
+>>>>>>> 3d9391b20c20d20076df558e8ce3a7470262c232
     }
 
 
@@ -339,7 +408,7 @@ class CatalogMenuController extends AdminController
             }
         }*/
 
-        $this->content = view('admin.catalog_add_product')->with(['series_id' => $id , 'cat' => $catalog->blocks])->render();
+        $this->content = view('admin.catalog_add_product')->with(['series_id' => $id ,'view_id' => $catalog->view_id, 'cat' => $catalog->blocks])->render();
 
         return $this->renderOutput();
 
@@ -363,7 +432,8 @@ class CatalogMenuController extends AdminController
 
        $product = Product::create([
             'name' => $data['name'],
-            'series_id' => $data['series_id']
+            'series_id' => $data['series_id'],
+            'view_id' => $data['view_id']
         ]);
 
 
@@ -411,7 +481,7 @@ class CatalogMenuController extends AdminController
 
 
 
-        return redirect()->route('catalog_menu')->with('success','Карточка добавлена');
+        return redirect()->route('catalog_menu',$data['view_id'])->with('success','Карточка добавлена');
 
 
     }

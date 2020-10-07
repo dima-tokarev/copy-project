@@ -97,7 +97,7 @@
                                                         @else
 
                                                             @foreach($item->optionType as $opt)
-                                                                <option selected>Выбрать значение</option>
+
                                                             <option value="{{$opt->value_option}}">{{$opt->value_option}}</option>
 
                                                         @endforeach
