@@ -32,8 +32,9 @@ class CatalogController extends AdminController
     {
         //
 
+        $catalog = Catalog::all();
 
-        $this->content = view('admin.main')->with(['catalog' => ''])->render();
+        $this->content = view('admin.main')->with(['catalog' => $catalog])->render();
 
         return $this->renderOutput();
 

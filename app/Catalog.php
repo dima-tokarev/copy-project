@@ -17,7 +17,9 @@ class Catalog extends Model
         'url',
         'sort_order',
         'live',
-        'type'
+        'type',
+        'hasContent',
+        'view_id'
     ];
 
     public $timestamps = false;

@@ -61,3 +61,4 @@ composer.lock
 .DS_Store
 workspace.xml
 Thumbs.db
+node_modules/

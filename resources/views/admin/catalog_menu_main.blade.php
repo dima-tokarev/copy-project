@@ -154,3 +154,6 @@
         </div>
     </div>
 </div>
+
+
+<!-- <div id="catalog" data='{{$catalogs}}' products='{{$products}}'></div> -->

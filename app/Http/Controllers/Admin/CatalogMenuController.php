@@ -178,11 +178,11 @@ class CatalogMenuController extends AdminController
 
             $html .= "
               <div class='container'>
-              
+
               <br/><h5>Добавить категорию</h5><br/>
                  <form action='/admin/catalog-store-cat' method='post'>
                 <div class='row'>
-               
+
                     <div class='col-7'>
                             <input class='form-control' type='text' name='name_cat' placeholder='введите название категории' required>
                     </div>
@@ -192,10 +192,10 @@ class CatalogMenuController extends AdminController
                     </div>
                       ".csrf_field()."
                 </div>
-              
-                
-               </form>  
-              </div>  
+
+
+               </form>
+              </div>
             ";
 
 
@@ -218,12 +218,13 @@ class CatalogMenuController extends AdminController
                 'url' => '#',
                 'sort_order' => 0,
                 'live' => 1,
-                'type' => 'cat'
-
-
+                'type' => 'cat',
+                'view_id' => $data['view_id']
             ]);
 
-            return redirect()->route('catalog_menu')->with('success','Категория добавлена');
+            // return redirect()->route('catalog_menu')->with('success','Категория добавлена');
+            return $cat ? json_encode('Success') : json_encode('');
+
 
 
 
@@ -241,8 +242,8 @@ class CatalogMenuController extends AdminController
 
         $cat = Catalog::where('id',$data['del_cat'])->delete();
 
-        return redirect()->route('catalog_menu')
-            ->with('success', 'Категория удалена!');
+        return $cat ? json_encode('Success') : json_encode('');
+
     }
 
 
@@ -256,11 +257,11 @@ class CatalogMenuController extends AdminController
 
             $html .= "
               <div class='container'>
-              
+
               <br/><h5>Добавить Серию</h5><br/>
                  <form action='/admin/catalog-store-series' method='post'>
                 <div class='row'>
-               
+
                     <div class='col-7'>
                             <input class='form-control' type='text' name='name_cat' placeholder='введите название категории' required>
                     </div>
@@ -270,10 +271,10 @@ class CatalogMenuController extends AdminController
                     </div>
                       ".csrf_field()."
                 </div>
-              
-                
-               </form>  
-              </div>  
+
+
+               </form>
+              </div>
             ";
 
 
@@ -292,17 +293,16 @@ class CatalogMenuController extends AdminController
 
         Catalog::create([
 
+            'view_id' => $data['view_id'],
             'name' => $data['name_cat'],
             'parent_id' => $data['cat_id'],
             'url' => '#',
             'sort_order' => 0,
             'live' => 1,
-            'type' => 'series'
-
-
+            'type' => 'series',
         ]);
 
-        return redirect()->route('catalog_menu')->with('success','Серия добавлена');
+        return $cat ? 'Success' : '';
 
 
     }
@@ -315,8 +315,8 @@ class CatalogMenuController extends AdminController
 
         $cat = Catalog::where('id',$data['del_cat'])->delete();
 
-        return redirect()->route('catalog_menu')
-            ->with('success', 'Серия удалена!');
+        return $cat ? json_encode('Success') : json_encode('');
+
     }
 
 
