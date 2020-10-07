@@ -295,8 +295,7 @@ a:focus {
     margin-bottom: 0.75rem;
 }
 .active-catalog-item:hover {
-    border: none;
-    box-shadow: 0 8px 10px 0px rgba(0, 0, 0, 0.75);
+    box-shadow: 0 8px 6px 0px rgba(0, 0, 0, 0.75);
 }
 .img-container {
     position: relative;
@@ -314,6 +313,7 @@ a:focus {
 }
 .active-catalog-item:hover .active-catalog-item-name {
     opacity: 0.8;
+    box-shadow: 0 8px 6px 0px rgba(0, 0, 0, 0.75);
 }
 
 .active-catalog-item-image {

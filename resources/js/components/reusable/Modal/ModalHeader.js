@@ -1,20 +1,36 @@
 import React from "react";
 
 import styled from "styled-components";
-const Header = styled.div`
+const DeleteHeader = styled.div`
     padding: 1.25rem;
 `;
-const Title = styled.h3`
+const DeleteTitle = styled.h3`
     font-weight: 700;
     font-size: 17px;
     text-transform: uppercase;
     line-height: 1.5;
 `;
+const AddHeader = styled.div`
+    padding: 1.5rem 1.25rem;
+    border-bottom: 1px solid lightgray;
+`;
+const AddTitle = styled.h3`
+    line-height: 1.5;
+    font-size: 17px;
+`;
 
-export const ModalHeader = ({ message }) => {
+export const ModalHeaderDelete = ({ message }) => {
     return (
-        <Header>
-            <Title>{message}</Title>
-        </Header>
+        <DeleteHeader>
+            <DeleteTitle>{message}</DeleteTitle>
+        </DeleteHeader>
+    );
+};
+
+export const ModalHeaderAdd = ({ message }) => {
+    return (
+        <AddHeader>
+            <AddTitle>Добавить {message}</AddTitle>
+        </AddHeader>
     );
 };

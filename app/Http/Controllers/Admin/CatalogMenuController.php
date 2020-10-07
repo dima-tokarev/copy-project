@@ -59,7 +59,7 @@ class CatalogMenuController extends AdminController
 
         $products  = Product::where('series_id',$data['select_id'])->where('view_id',$data['view_id'])->get();
 
-/*        $json_product = [];
+        $json_product = [];
 
             foreach ($products as $product) {
                 $json_product[$product->id] = [
@@ -72,69 +72,8 @@ class CatalogMenuController extends AdminController
 
 
 
-     return  json_encode($json_product);*/
+     return  json_encode($json_product);
 
-        $html = '';
-        if($data['select_id']){
-        if(count($products) > 0) {
-
-
-            $html .= '<div class="container-fluid">   <div class="row">
-                    <div  class="col-lg-12 col-md-12 col-sm-12">
-                    <div class="row">
-                    ';
-            foreach ($products as $product) {
-                if(isset($product->productImg->first()->path)){
-                    $img = $product->productImg->first()->path;
-                }else{
-                    $img = '123.jpg';
-                }
-                $html .= '
-
-                         <!--1rd card-->
-                            <div style="padding-top: 24px;" class="col=lg-4 col-md-4 order-md-3">
-                                <div class="container block rounded-lg rounded-sm">
-                                    <!--1st row--->
-                                    <div class="row">
-
-                                        <div class="col-lg-12 col-md-12 col-sm-12 img-catalog">
-                                           <a href="/admin/product/' . $product->id . '"><img  src="http://'.$_SERVER['SERVER_NAME'].'/storage/app/public/'.$img.'" alt="placeholder image"/></a>
-
-                                        </div>
-                                    </div>
-                                    <!--2nd row--->
-                                    <div class="row" >
-                                        <div class="col-lg-12 col-md-12 col-sm-12 block2">
-                                            <p><h6 style="color: #fff" class="mb-3">'.$product->name.'</h6></p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-
-             ';
-
-/*
-                      $html .= '
-
-                               <td><a href="/admin/product/'.$product->id.'">'.$product->name.'</a></td>
-                            <td align="right">
-                                      <form action="/admin/catalog-delete-product" method="post" style="display:  inline-flex">
-                                          <input type="hidden" name="del_product" value="'.$product->id.'">
-                                          <button  onclick="return confirm(\'Удалить работу?\')" class="btn btn-info" aria-hidden="true">Удалить</button>
-                                          ' . csrf_field() . '
-                                      </form>
-                                  </td>
-
-                           ';*/
-            }
-            $html .= '</div></div></div></div>';
-        }else{
-            $html .= '<div align="center"><h5 style="padding: 20px;">Товары не найдены</h5></div>';
-        }
-            echo $html;
-
-        }
 
     }
 
@@ -183,35 +122,32 @@ class CatalogMenuController extends AdminController
               <div class='container'>
 
               <br/><h5>Добавить категорию</h5><br/>
-              
+
                 <div class='row'>
 
                     <div class='col-7'>
                             <input class='form-control' type='text' name='name_cat' placeholder='введите название категории' required>
                     </div>
-                    
+
                       <div class='col-3'>
                          <form  action='/admin/".$data['add_view_id']."/catalog-store-cat/' method='post'>
                           <input type='hidden' name='cat_id' value='".$data['add_cat']."'>
                              <input type='hidden' name='view_id' value='".$data['add_view_id']."'>
                                    ".csrf_field()."
                          <button type='submit' class='btn btn-info'>Добавить</button>
-                                
+
                </form>
                     </div>
-                   
+
                 </div>
-<<<<<<< HEAD
 
 
                </form>
               </div>
-=======
-         
-                
-              
-              </div>  
->>>>>>> 3d9391b20c20d20076df558e8ce3a7470262c232
+
+
+
+              </div>
             ";
 
 
@@ -228,17 +164,14 @@ class CatalogMenuController extends AdminController
 
 
         if(isset($data['main_cat'])){
-            Catalog::create([
+            $res =Catalog::create([
 
                 'name' => $data['name'],
                 'parent_id' => null,
                 'url' => '#',
                 'sort_order' => 0,
                 'live' => 1,
-<<<<<<< HEAD
                 'type' => 'cat',
-=======
-                'type' => $data['type'],
                 'hasСontent' => 0,
                 'view_id' => $data['view_id']
             ]);
@@ -247,35 +180,20 @@ class CatalogMenuController extends AdminController
         }else{
 
 
-            Catalog::create([
+           $res = Catalog::create([
 
                 'name' => $data['name_cat'],
-                'parent_id' => $data['parent_id'],
+                'parent_id' => $data['cat_id'],
                 'url' => '#',
                 'sort_order' => 0,
                 'live' => 1,
-                'type' => $data['type'],
+                'type' => 'cat',
                 'hasСontent' => 0,
->>>>>>> 3d9391b20c20d20076df558e8ce3a7470262c232
                 'view_id' => $data['view_id']
             ]);
         }
 
-
-
-
-<<<<<<< HEAD
-            // return redirect()->route('catalog_menu')->with('success','Категория добавлена');
-            return $cat ? json_encode('Success') : json_encode('');
-
-=======
->>>>>>> 3d9391b20c20d20076df558e8ce3a7470262c232
-
-
-            return redirect()->route('catalog_menu',$data['view_id'])->with('success','Категория добавлена');
-
-
-
+            return $res ? json_encode('Success') : json_encode('');
     }
 
     public function deleteCat(Request $request)
@@ -288,13 +206,8 @@ class CatalogMenuController extends AdminController
 
         $cat = Catalog::where('id',$data['del_cat'])->delete();
 
-<<<<<<< HEAD
         return $cat ? json_encode('Success') : json_encode('');
 
-=======
-        return redirect()->route('catalog_menu',$data['view_id'])
-            ->with('success', 'Категория удалена!');
->>>>>>> 3d9391b20c20d20076df558e8ce3a7470262c232
     }
 
 
@@ -343,7 +256,7 @@ class CatalogMenuController extends AdminController
         $data = $request->all();
 
 
-        Catalog::create([
+       $res = Catalog::create([
 
             'view_id' => $data['view_id'],
             'name' => $data['name_cat'],
@@ -352,20 +265,11 @@ class CatalogMenuController extends AdminController
             'sort_order' => 0,
             'live' => 1,
             'type' => 'series',
-<<<<<<< HEAD
-        ]);
-
-        return $cat ? 'Success' : '';
-=======
             'hasContent' => 0,
             'view_id' => $data['view_id']
-
-
-
         ]);
 
-        return redirect()->route('catalog_menu',$data['view_id'])->with('success','Серия добавлена');
->>>>>>> 3d9391b20c20d20076df558e8ce3a7470262c232
+        return $res ? json_encode('Success') : json_encode('');
 
 
     }
@@ -378,14 +282,8 @@ class CatalogMenuController extends AdminController
 
         $cat = Catalog::where('id',$data['del_cat'])->delete();
 
-<<<<<<< HEAD
         return $cat ? json_encode('Success') : json_encode('');
 
-=======
-        
-        return redirect()->route('catalog_menu',$data['view_id'])
-            ->with('success', 'Серия удалена!');
->>>>>>> 3d9391b20c20d20076df558e8ce3a7470262c232
     }
 
 
@@ -494,8 +392,8 @@ class CatalogMenuController extends AdminController
 
         $product = Product::where('id',$data['del_product'])->delete();
 
-        return redirect()->route('catalog_menu')
-            ->with('success', 'Карточка удалена!');
+        return $product ? json_encode('Success') : json_encode('');
+
     }
 
 

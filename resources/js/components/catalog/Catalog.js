@@ -7,13 +7,12 @@ import {
     fetchingData,
     deleteFromCatalog,
     findParentsInCatalog,
-    returnCatalogItem,
     addToCatalog
 } from "./functions";
 import { CatalogHeader } from "./CatalogHeader";
 import { SmallScreensCatalogItems } from "./SmallScreensCatalogItems";
-import { DeleteModal } from "../reusable/Modal/DeleteModal";
-import { AddItemModal } from "../reusable/Modal/AddItemModal";
+import { DeleteCatalogModal } from "../reusable/Modal/Catalog/DeleteCatalogModal";
+import { AddCatalogModal } from "../reusable/Modal/Catalog/AddCatalogModal";
 import { AnimatePresence } from "framer-motion";
 import { ModalContainer } from "../reusable/Modal/ModalContainer";
 import { Notifications } from "../reusable/Notifications";
@@ -24,6 +23,7 @@ function Catalog() {
     const [refactoredCatalog, setRefactoredCatalog] = useState(null);
     const [title, setTitle] = useState("");
     const [activeCatalogItem, setActiveCatalogItem] = useState(null);
+    const [amount, setAmount] = useState(null);
     const [smOpen, setSmOpen] = useState(false);
     const [openModal, setOpenModal] = useState(null);
     const [currentItem, setCurrentItem] = useState(null);
@@ -49,6 +49,17 @@ function Catalog() {
         findParentsInCatalog(arrCopy, setRefactoredCatalog);
     }, [catalog]);
 
+    // Обновить кол-во продуктов в activeCatalogItem
+    useEffect(() => {
+        if (activeCatalogItem) {
+            setAmount(
+                activeCatalogItem !== "loading" &&
+                    Object.values(activeCatalogItem).length !== 0 &&
+                    Object.values(activeCatalogItem).length
+            );
+        }
+    }, [activeCatalogItem]);
+
     // Убрать оповещение
     useEffect(() => {
         if (notification.message) {
@@ -71,8 +82,9 @@ function Catalog() {
             setActiveCatalogItem("loading");
             setTitle(item.name);
             setSmOpen(false); // sidebar on small screens
-            fetchingData("/admin/catalog-select-product", "POST", {
-                select_id: item.id
+            fetchingData(`/admin/${item.id}/catalog-select-product`, "POST", {
+                select_id: item.id,
+                view_id: 1
             })
                 .then(data => {
                     setActiveCatalogItem(data);
@@ -82,48 +94,45 @@ function Catalog() {
         }
     };
     const handleAddModal = id => {
-        console.log("called add", id);
-
-        // setOpenModal("add");
-        let newItem = {
-            id: catalog[catalog.length - 1].id + 1,
-            name: "New2",
-            parent_id: id,
-            url: "#",
-            sort_order: 0,
-            live: 1,
-            type: "series",
-            hasContent: 0,
-            view_id: 1
-        };
-        setLoading("Добавляется новая категория...");
-        fetchingData("/admin/catalog-store-series", "POST", {
-            name_cat: "New3",
-            cat_id: id,
-            view_id: 1
-        })
-            .then(data => {
-                console.log(data);
-                if (data) {
-                    setCatalog([...catalog, newItem]);
-                    setNotification({
-                        message: `Успешно добавили новую категорию`
-                    });
-                    setLoading(null);
-                }
-            })
-            .catch(err => {
-                console.log(err);
-                setLoading(null);
-                setNotification({
-                    message: `Что-то пошло не так...`,
-                    error: true
-                });
-            });
+        setOpenModal("add");
+        // let newItem = {
+        //     id: catalog[catalog.length - 1].id + 1,
+        //     name: "New2",
+        //     parent_id: id,
+        //     url: "#",
+        //     sort_order: 0,
+        //     live: 1,
+        //     type: "series",
+        //     hasContent: 0,
+        //     view_id: 1
+        // };
+        // setLoading("Добавляется новая категория...");
+        // fetchingData("/admin/catalog-store-series", "POST", {
+        //     name_cat: "New3",
+        //     cat_id: id,
+        //     view_id: 1
+        // })
+        //     .then(data => {
+        //         console.log(data);
+        //         if (data) {
+        //             setCatalog([...catalog, newItem]);
+        //             setNotification({
+        //                 message: `Успешно добавили новую категорию`
+        //             });
+        //             setLoading(null);
+        //         }
+        //     })
+        //     .catch(err => {
+        //         console.log(err);
+        //         setLoading(null);
+        //         setNotification({
+        //             message: `Что-то пошло не так...`,
+        //             error: true
+        //         });
+        //     });
     };
 
     const handleDeleteModal = item => {
-        console.log("called delete", item);
         setCurrentItem(item);
         setOpenModal("delete");
     };
@@ -133,11 +142,7 @@ function Catalog() {
             <div className="head-container mb-4">
                 <CatalogHeader
                     title={activeCatalogItem !== "loading" && title}
-                    amount={
-                        activeCatalogItem &&
-                        activeCatalogItem !== "loading" &&
-                        Object.values(activeCatalogItem).length
-                    }
+                    amount={amount}
                 />
                 <div className="d-block d-lg-flex">
                     {/* Только на больших экранах */}
@@ -164,21 +169,16 @@ function Catalog() {
                     <div className="d-lg-none m-4">
                         <h2 className="sm-title">
                             {activeCatalogItem !== "loading" && title}
-                            {activeCatalogItem &&
-                                activeCatalogItem !== "loading" && (
-                                    <span className="items-amount">
-                                        (
-                                        {
-                                            Object.values(activeCatalogItem)
-                                                .length
-                                        }
-                                        )
-                                    </span>
-                                )}
+                            {amount && (
+                                <span className="items-amount">({amount})</span>
+                            )}
                         </h2>
                     </div>
 
-                    <ActiveCatalogItem defaultData={activeCatalogItem} />
+                    <ActiveCatalogItem
+                        defaultData={activeCatalogItem}
+                        setDefaultData={setActiveCatalogItem}
+                    />
                 </div>
             </div>
 
@@ -187,7 +187,7 @@ function Catalog() {
                 {openModal && (
                     <ModalContainer>
                         {openModal === "delete" ? (
-                            <DeleteModal
+                            <DeleteCatalogModal
                                 setOpenModal={setOpenModal}
                                 item={currentItem}
                                 deleteFunc={deleteFromCatalog}
@@ -197,7 +197,7 @@ function Catalog() {
                                 setLoading={setLoading}
                             />
                         ) : (
-                            <AddItemModal
+                            <AddCatalogModal
                                 setOpenModal={setOpenModal}
                                 item={currentItem}
                                 addFunc={addToCatalog}

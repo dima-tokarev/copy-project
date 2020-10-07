@@ -18,11 +18,7 @@ class Catalog extends Model
         'sort_order',
         'live',
         'type',
-<<<<<<< HEAD
-        'hasContent',
-=======
         'hasСontent',
->>>>>>> 3d9391b20c20d20076df558e8ce3a7470262c232
         'view_id'
     ];
 

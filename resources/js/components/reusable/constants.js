@@ -1,3 +1,12 @@
+import React from "react";
+import styled from "styled-components";
+
+export const AddButtonBlueColor = {
+    bg: "#3490dc",
+    hover: "#3182ce",
+    focus: "0 0 0 3px rgba(66, 153, 225, 0.5)"
+};
+
 export const scaleTransition = {
     transition: { duration: 0.1, ease: "easeInOut" },
     initial: { opacity: 0, scale: 0.1 },

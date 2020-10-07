@@ -7,6 +7,7 @@ import {
     TrashSolid
 } from "@graywolfai/react-heroicons";
 import { filterActiveCatalogItem } from "./functions";
+import { AddButtonBlueColor } from "../reusable/constants";
 
 const HeaderContainer = styled.div`
     display: flex;
@@ -59,16 +60,16 @@ const AddButton = styled.button`
     display: flex;
     align-items: center;
     padding: 0.5rem 1.5rem;
-    background-color: #3490dc;
+    background-color: ${props => props.color.bg};
     transition: all 0.3s ease;
     border-radius: 5px;
     color: white;
     font-size: 17px;
     &:hover {
-        background-color: #3182ce;
+        background-color: ${props => props.color.hover};
     }
     &:focus {
-        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+        box-shadow: ${props => props.color.focus};
     }
     @media (max-width: 576px) {
         display: flex;
@@ -86,12 +87,38 @@ const IconSpan = styled.span`
 const ImgDiv = styled.div`
     padding-bottom: 66.666667%;
 `;
+function Header({ handleChange }) {
+    return (
+        <HeaderContainer>
+            <InputContainer>
+                <Input
+                    type="text"
+                    placeholder="Поиск"
+                    onChange={handleChange}
+                />
+                <SearchSpan>
+                    <SearchSpanIcon>
+                        <SearchSolid />
+                    </SearchSpanIcon>
+                </SearchSpan>
+            </InputContainer>
+            <AddButton title="Добавить продукт" color={AddButtonBlueColor}>
+                <span>Добавить</span>
+                <IconSpan primary>
+                    <PlusOutline />
+                </IconSpan>
+            </AddButton>
+        </HeaderContainer>
+    );
+}
 
 export const ActiveCatalogItem = ({ defaultData }) => {
     const [activeCatalogItem, setActiveCatalogItem] = useState(null);
+    const [inputValue, setInputValue] = useState("");
 
     useEffect(() => {
         setActiveCatalogItem(defaultData);
+        setInputValue("");
     }, [defaultData]);
 
     const handleChange = e => {
@@ -107,32 +134,20 @@ export const ActiveCatalogItem = ({ defaultData }) => {
             </div>
         );
     }
+    if (defaultData && defaultData.length === 0) {
+        return (
+            <div className="active-catalog-item-container d-flex justify-content-center">
+                <h5 className="active-catalog-empty-title">Пока ничего нет.</h5>
+            </div>
+        );
+    }
     if (activeCatalogItem && activeCatalogItem.length === 0) {
         return (
             <div className="active-catalog-item-container">
-                <HeaderContainer>
-                    <InputContainer>
-                        <Input
-                            type="text"
-                            placeholder="Поиск"
-                            onChange={handleChange}
-                        />
-                        <SearchSpan>
-                            <SearchSpanIcon>
-                                <SearchSolid />
-                            </SearchSpanIcon>
-                        </SearchSpan>
-                    </InputContainer>
-                    <AddButton title="Добавить продукт">
-                        <span>Добавить</span>
-                        <IconSpan primary>
-                            <PlusOutline />
-                        </IconSpan>
-                    </AddButton>
-                </HeaderContainer>
-                <div className="d-flex justify-content-center"  >
+                <Header handleChange={handleChange} />
+                <div className="d-flex justify-content-center">
                     <h5 className="active-catalog-empty-title">
-                        Пока ничего нет.
+                        Ничего не найдено.
                     </h5>
                 </div>
             </div>
@@ -140,28 +155,7 @@ export const ActiveCatalogItem = ({ defaultData }) => {
     }
     return (
         <div className="active-catalog-item-container">
-            {defaultData && (
-                <HeaderContainer>
-                    <InputContainer>
-                        <Input
-                            type="text"
-                            placeholder="Поиск"
-                            onChange={handleChange}
-                        />
-                        <SearchSpan>
-                            <SearchSpanIcon>
-                                <SearchSolid />
-                            </SearchSpanIcon>
-                        </SearchSpan>
-                    </InputContainer>
-                    <AddButton title="Добавить продукт">
-                        <span>Добавить</span>
-                        <IconSpan primary>
-                            <PlusOutline />
-                        </IconSpan>
-                    </AddButton>
-                </HeaderContainer>
-            )}
+            {defaultData && <Header handleChange={handleChange} />}
             <div className="d-flex justify-content-center">
                 <div className="active-catalog-items">
                     {activeCatalogItem &&

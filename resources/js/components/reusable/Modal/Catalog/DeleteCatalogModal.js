@@ -1,5 +1,5 @@
 import React from "react";
-import { ModalHeader } from "./ModalHeader";
+import { ModalHeaderDelete } from "../ModalHeader";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -48,7 +48,7 @@ const DeleteButton = styled.button`
     }
 `;
 
-export const DeleteModal = ({
+export const DeleteCatalogModal = ({
     setOpenModal,
     setNotification,
     item,
@@ -71,7 +71,7 @@ export const DeleteModal = ({
     };
     return (
         <Container onClick={e => e.stopPropagation()}>
-            <ModalHeader message={`Удалить '${item.name}'`} />
+            <ModalHeaderDelete message={`Удалить '${item.name}'`} />
             <Warning>
                 <p>
                     Вы уверены что хотите удалить <strong>{item.name}</strong>?
@@ -81,7 +81,7 @@ export const DeleteModal = ({
             <Footer>
                 <ButtonsContainer>
                     <CancelButton
-                        title="Выйти? "
+                        title="Выйти?"
                         onClick={() => setOpenModal(null)}
                     >
                         Отменить
