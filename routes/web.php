@@ -31,20 +31,15 @@ Route::group(['prefix' => 'admin','middleware' => ['auth','revalidate']],functio
 
 
 
-    Route::get('/clear-cache', function() {
-        Artisan::call('cache:clear');
-        return "Cache is cleared";
-    });
-
-
     /* Каталог фронт */
-    Route::get('/catalog','Admin\CatalogController@index')->name('catalog_index');
+    Route::get('/catalog/{id}','Admin\CatalogController@index')->name('catalog_index');
+
     /* Каталог админ */
-    Route::get('/catalog-menu','Admin\CatalogMenuController@index')->name('catalog_menu');
+    Route::get('/catalog-menu/{id}/','Admin\CatalogMenuController@index')->name('catalog_menu');
 
     /*add cat*/
-    Route::post('/catalog-add-cat','Admin\CatalogMenuController@addCat')->name('add_cat');
-    Route::post('/catalog-store-cat','Admin\CatalogMenuController@storeCat')->name('store_cat');
+    Route::post('/catalog-add-cat/','Admin\CatalogMenuController@addCat')->name('add_cat');
+    Route::post('catalog-store-cat','Admin\CatalogMenuController@storeCat')->name('store_cat');
 
 
     /*add series*/
@@ -57,7 +52,7 @@ Route::group(['prefix' => 'admin','middleware' => ['auth','revalidate']],functio
     Route::get('/product/{id}','Admin\ProductController@showProduct')->name('show_product');
 
     /*select cat product*/
-    Route::post('/catalog-select-product','Admin\CatalogMenuController@selectProduct')->name('select_product');
+    Route::post('{id}/catalog-select-product','Admin\CatalogMenuController@selectProduct')->name('select_product');
     /* edit product*/
     Route::get('/edit-product/{id}','Admin\ProductController@editProduct')->name('edit_product');
     Route::post('/update-product','Admin\ProductController@updateProduct')->name('upd_product');
@@ -99,6 +94,8 @@ Route::group(['prefix' => 'admin','middleware' => ['auth','revalidate']],functio
     /* cat */
 
     Route::get('/catalog-block','Admin\CatBlockController@index')->name('cat_all');
+    Route::get('/show-catalog-block/{id}','Admin\CatBlockController@showCatalog')->name('show_catalog');
+
     Route::get('/catalog-block-show/{id}','Admin\CatBlockController@show')->name('cat_block_show');
     Route::post('/catalog-block-store','Admin\CatBlockController@store')->name('store_cat_block');
 

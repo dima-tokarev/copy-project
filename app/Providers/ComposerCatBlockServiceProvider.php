@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Http\ViewComposers\NavigationComposer;
+use App\Http\ViewComposers\NavigationCatalogBlockComposer;
 
 class ComposerCatBlockServiceProvider extends ServiceProvider
 {
@@ -24,6 +24,6 @@ class ComposerCatBlockServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        view()->composer('admin.catalog_block_menu', NavigationComposer::class);
+        view()->composer('admin.catalog_block_menu', NavigationCatalogBlockComposer::class);
     }
 }

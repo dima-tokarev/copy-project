@@ -17,7 +17,9 @@ class Catalog extends Model
         'url',
         'sort_order',
         'live',
-        'type'
+        'type',
+        'hasСontent',
+        'view_id'
     ];
 
     public $timestamps = false;
@@ -46,13 +48,30 @@ class Catalog extends Model
 
     public function blocks()
     {
-        return $this->belongsToMany('App\ProductCatOption','cat_block');
+        return $this->belongsToMany('App\ProductCatOption','cat_block')->withPivot('sort')->orderBy('sort');
     }
 
-    public function saveBlock($inputBlock)
+
+    public function products()
     {
-        if(!empty($inputBlock)){
-            $this->blocks()->sync($inputBlock);
+        return $this->belongsToMany('App\Product','product_matching')->withPivot('view_id')->orderBy('view_id');
+    }
+
+    public function saveBlock($inputBlock,$sort)
+    {
+
+        if(!empty($inputBlock) && !empty($sort)){
+            $data = [];
+
+            foreach ($inputBlock as $index => $val){
+
+                $data[$val] = ['sort' => $sort[$index]];
+
+            }
+
+            $this->blocks()->sync($data);
+
+
         }else{
             $this->blocks()->detach();
         }

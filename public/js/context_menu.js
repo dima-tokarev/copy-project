@@ -3,12 +3,12 @@ $(document).ready(function () {
     $('.add_catalog').on('click',function () {
 
         let id = $(this).attr('data-id');
-
-
-        $.ajax({
+        let view_id = $(this).attr('view-id');
+        $('.f-cat').html('<input name="parent_id" type="hidden" value="'+id+'">');
+  /*      $.ajax({
 
             url:'catalog-add-cat',
-            data:{'add_cat': id},
+            data:{'add_cat': id,'add_view_id':view_id},
             headers:{'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
             type:'POST',
             datatype:'html',
@@ -19,19 +19,19 @@ $(document).ready(function () {
             }
 
 
-        });
+        });*/
     })
 
 
     $('.add_series').on('click',function () {
 
         let id = $(this).attr('data-id');
-
-
-        $.ajax({
+        let view_id = $(this).attr('view-id');
+        $('.f-ser').html('<input name="parent_id" type="hidden" value="'+id+'">');
+   /*     $.ajax({
 
             url:'catalog-add-series',
-            data:{'add_series': id},
+            data:{'add_series': id,'add_view_id':view_id},
             headers:{'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
             type:'POST',
             datatype:'html',
@@ -42,7 +42,7 @@ $(document).ready(function () {
             }
 
 
-        });
+        });*/
     })
 
 
@@ -72,6 +72,7 @@ $(document).ready(function () {
     $('.select_cat_product').on('click',function () {
 
         let id = $(this).attr('data-id-cat');
+        let view_id = $(this).attr('view-id');
 
         console.log(id);
 
@@ -79,7 +80,9 @@ $(document).ready(function () {
         $.ajax({
 
             url:'catalog-select-product',
-            data:{'select_id': id},
+            data:{'select_id': id,'view_id':view_id},
+
+
             headers:{'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
             type:'POST',
             datatype:'html',
@@ -105,14 +108,14 @@ $(document).ready(function () {
     $('.user_select_cat_product').on('click',function () {
 
         let id = $(this).attr('data-id-cat');
-
+        let view_id = $(this).attr('view-id');
         console.log(id);
 
 
         $.ajax({
 
             url:'catalog-select-product',
-            data:{'select_id': id},
+            data:{'select_id': id,'view_id':view_id},
            headers:{'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
             type:'POST',
             datatype:'html',

@@ -3,7 +3,14 @@
 
         <div style="border: 1px solid #ccc;border-radius: 10px;" class="col-4">
             <br>
-            <input class="form-control" style="width: 100%" type="text" name="search" placeholder="Поиск"><br>
+
+            {{--<input class="form-control" style="width: 100%" type="text" name="search" placeholder="Поиск"><br>--}}
+           <div align="right">
+            @foreach($views as $view)
+
+            <a href="{{route('catalog_index',['id' => $view->id])}}">{{$view->name}}</a> /
+            @endforeach
+           </div>
             <div class="col-12">
 
             </div>
@@ -16,7 +23,7 @@
                     <div  class="col-lg-12 col- md-12 col-sm-12">
                         <div id="content_catalog" class="row">
 
-<h5 align="center" style="padding: 20px;">Выберите категорию</h5>
+                        <h5 align="center" style="padding: 20px;">Выберите категорию</h5>
 
 
                         </div>

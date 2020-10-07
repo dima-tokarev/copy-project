@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Catalog;
+use App\CatBlock;
 use App\Http\Controllers\Controller;
 use App\ProductCatOption;
 use Illuminate\Http\Request;
+use DB;
 
 
 class CatBlockController extends AdminController
@@ -22,22 +24,34 @@ class CatBlockController extends AdminController
     public function index()
     {
 
-        $cat = Catalog::all();
+        $cat = DB::table('view')->get();
 
-        $this->content = view('admin.cat_block_all')->with(['cat_block' => $cat ])->render();
+
+        $this->content = view('admin.cat_block_all')->with(['catalogs' => $cat ])->render();
 
         return $this->renderOutput();
 
     }
 
+    public function showCatalog($id){
+
+
+        $this->content = view('admin.show_catalog_menu')->with(['catalogs' => '' ])->render();
+
+        return $this->renderOutput();
+    }
+
+
+
     public function show($id)
     {
 
-        $catalog =Catalog::find($id);
+        $catalog = Catalog::find($id);
 
         $blocks = ProductCatOption::all();
 
-        $this->content = view('admin.cat_block_show')->with(['blocks' => $blocks,'catalog' => $catalog ])->render();
+
+        $this->content = view('admin.cat_block_show')->with(['blocks' => $blocks->sortBy('sort'),'catalog' => $catalog])->render();
 
         return $this->renderOutput();
 
@@ -53,9 +67,9 @@ class CatBlockController extends AdminController
 
 
             if(isset($data[$cat->id])){
-                $cat->saveBlock($data[$cat->id]);
+                $cat->saveBlock($data[$cat->id],$data['sort']);
             }else{
-                $cat->saveBlock([]);
+                $cat->saveBlock([],[]);
             }
 
 

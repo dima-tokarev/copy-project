@@ -7,10 +7,18 @@ use Illuminate\View\View;
 
 class NavigationComposer
 {
+
+
+
     public function compose(View $view)
     {
+
+
+        $id = request()->route()->parameter('id');
+
+
         $menuitems = Catalog::isLive()
-            ->ofSort(['parent_id' => 'asc', 'sort_order' => 'asc'])
+            ->ofSort(['parent_id' => 'asc', 'sort_order' => 'asc'])->where('view_id',$id)
             ->get();
 
 

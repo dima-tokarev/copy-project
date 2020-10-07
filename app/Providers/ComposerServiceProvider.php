@@ -24,6 +24,7 @@ class ComposerServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+
         view()->composer('admin.menu_catalog', NavigationComposer::class);
     }
 }

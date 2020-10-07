@@ -1,12 +1,31 @@
 <div class="container">
-    <h5>Назначение блоков для категории</h5>
-    <hr>
     <div class="row">
         <div  class="col-12">
-            @include('admin.catalog_block_menu')
+            <h5>Выберите каталог</h5>
+            {{--  @include('admin.catalog_block_menu')--}}
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Название</th>
+                    <th>Перейти</th>
+                </tr>
+                <tbody>
+                @foreach($catalogs as $catalog)
+                    <tr>
+                        <td>
+                            {{$catalog->name}}
+                        </td>
+                        <td>
+                            <a href="{{route('show_catalog',$catalog->id)}}">Перейти</a>
+                        </td>
+                    </tr>
+                @endforeach
+                </tbody>
+                </thead>
+            </table>
         </div>
     </div>
 </div>
 
-{{--
-<a href="{{route('cat_block_show',$cat->id)}}">Назначить</a>--}}
+
+
